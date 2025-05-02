@@ -1,0 +1,62 @@
+{
+    "Entities": {
+      "CoreNetworkElements": [
+        "UPF",
+        "AMP",
+        "AMF",
+        "MEC",
+        "UDM",
+        "PCF",
+        "SMF",
+        "AS",
+        "NRF"
+      ],
+      "CoreNetworkInterfaces": [
+        "N1",
+        "N2",
+        "N3",
+        "N4",
+        "N5",
+        "N6"
+
+      ],
+      "AccessNetworkElements": [
+        "gNB",
+        "eNB",
+        "UE",
+        "BBU",
+        "RRU"
+      ],
+      "AccessNetworkInterfaces": [
+        "AirInterface"
+      ],
+      "NetworkFeatures": [
+        "eMBB",
+        "uRLLC",
+        "mMTC",
+        "EdgeComputing",
+        "NetworkSlices",
+        "VirtualInfrastructure",
+        "OpenNetworkAbilities"
+      ]
+    },
+    "Methods": [
+      "Interview",
+      "DocumentReview",
+      "ConsoleReview",
+      "LogReview",
+      "GUIReview",
+      "PacketCapture"
+    ],
+    "EvidenceType": [
+      "GUIScreenshot",
+      "ConsoleScreenshot",
+      "SitePhoto",
+      "ManagementDocument",
+      "DesignDocument",
+      "InterviewDocument",
+      "PacketCaptureFile",
+      "ConsoleOutputFile",
+      "LogFile"
+    ]
+  }
