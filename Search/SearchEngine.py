@@ -59,10 +59,13 @@ class SearchEngine():
         # 根据模式处理记录
         if mode == "filtering":
             # 过滤模式：只保留命中所有filter_tags的文档
-            filtered_records = [
-                record for record in retrieval_records
-                if filter_set.issubset(set(record.get('tags', [])))
-            ]
+            if filter_tags == []:
+                filtered_records = retrieval_records
+            else:
+                filtered_records = [
+                    record for record in retrieval_records
+                    if filter_set.issubset(set(record.get('tags', [])))
+                ]
             # 按命中数量降序排序
             ranked_records = sorted(
                 filtered_records,
@@ -71,10 +74,13 @@ class SearchEngine():
             )
         elif mode == "ranking":
             # 排序模式：保留至少命中一个filter_tags的文档
-            filtered_records = [
-                record for record in retrieval_records
-                if filter_set and set(record.get('tags', [])) & filter_set
-            ]
+            if filter_tags == []:
+                filtered_records = retrieval_records
+            else:
+                filtered_records = [
+                    record for record in retrieval_records
+                    if filter_set and set(record.get('tags', [])) & filter_set
+                ]
             # 按命中数量降序排序
             ranked_records = sorted(
                 filtered_records,

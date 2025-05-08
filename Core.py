@@ -1,23 +1,30 @@
 """
-
-NaviSearchCore.py
+Core.py
 
 核心模块，负责调度SemanticTagger，SearchOperator等组件。
 
+重构记录：
+- 2025-04-29: 初始创建，实现基本的搜索功能。
+- 2025-05-01: 添加了标签过滤功能，支持动态添加和移除标签。
+- 2025-05-02: 优化了搜索逻辑，支持更复杂的查询。
+- 2025-05-08: 进行了无状态改造，将状态管理移交给外部，同时改变了接口命名。
 创建日期：2025-04-29
 """
+import os
 import traceback
 import json
 from typing import List, Dict, Optional
 from pymilvus import MilvusClient,FieldSchema,CollectionSchema,Collection,DataType,Connections
 from Search.SearchEngine import SearchEngine
 from Tagger.SemanticTagger import SemanticTagger
-from utils import get_embedding, get_response, get_filter
+from utils import get_embedding, get_response, get_filter, flatten_nested_structure
 
-
+TAGGED_RECORDS_PATH = "Data/Chunks/5G行业应用安全评估规范+证明材料.jsonl"
+# TAGGED_RECORDS_PATH = "Data/Records/5G行业应用安全评估测试指引_tagged.jsonl"
+RAW_CORPUS_PATH = "Data/Corpus/5G行业应用安全评估测试指引.jsonl"
 
 class NaviSearchCore:
-    def __init__(self, tags_design_path=None, corpus_path="Data/Corpus/5G行业应用安全评估测试指引.jsonl"):
+    def __init__(self, init_collection = False, tags_design_path=None, corpus_path=RAW_CORPUS_PATH):
 
         self.corpus_path = corpus_path
         self.client = MilvusClient(
@@ -28,20 +35,18 @@ class NaviSearchCore:
 
         self.tagger = SemanticTagger(tags_design_path)
         self.active_tags = []  # 核心维护当前激活的标签
-        self.init_collection()
+        self.init_collection(init_collection, drop_existing=False)  # 初始化 Milvus collection
         self.search_engine = SearchEngine(
             client = self.client, collection_name = self.collection_name
         )
 
 
-        # self.create_collection(self.collection_name)
-        # self.load_corpus()
 
-
-    def init_collection(self, drop_existing=True):
+    def init_collection(self, init_collection = False, drop_existing=False):
         """初始化 Milvus collection"""
         try:
-            self.drop_collection(self.collection_name) if drop_existing else None
+            if drop_existing:
+                self.drop_collection(self.collection_name)
         except Exception as e:
             print(f"删除 Milvus collection 时发生错误: {e}，试图删除一个不存在的collection。")
         try:
@@ -55,30 +60,29 @@ class NaviSearchCore:
 
             # 创建 Schema
             self.schema = CollectionSchema(fields, description="Schema for document embeddings")
-
-            # 创建Collection
-            self.client.create_collection(self.collection_name, schema=self.schema)
-            connection = Connections()
-            connection.connect(alias="default", host="localhost", port="19530",token="root:Milvus")
-            self.collection = Collection(self.collection_name)  # 初始化 collection 实例
-              # 连接到 Milvus 服务，确保连接别名与 MilvusClient 中的一致
+            if init_collection:
+                # 创建Collection
+                self.client.create_collection(self.collection_name, schema=self.schema)
         except Exception as e:
             print(f"创建 Milvus collection 时发生错误: {e}")
-
-        self.load_corpus()
+        connection = Connections()
+        connection.connect(alias="default", host="localhost", port="19530",token="root:Milvus")
+        self.collection = Collection(self.collection_name)  # 初始化 collection 实例
+            # 连接到 Milvus 服务，确保连接别名与 MilvusClient 中的一致
+        if init_collection:
+            self.load_corpus()
 
          # ✅ 数据插入完成后，创建索引
-        collection = Collection(name=self.collection_name)
         index_params = {
             "index_type": "IVF_FLAT",
             "metric_type": "L2",
             "params": {"nlist": 100}
         }
-        collection.create_index(field_name="embedding", index_params=index_params)
+        self.collection.create_index(field_name="embedding", index_params=index_params)
         print("索引创建完成")
 
         # 加载到内存
-        collection.load()
+        self.collection.load()
         print("集合已加载到内存，准备检索")
 
     def load_corpus(self, use_cache = True):
@@ -90,9 +94,24 @@ class NaviSearchCore:
             }
         try:
             if use_cache:
-                with open('Data/Records/5G行业应用安全评估测试指引_tagged.jsonl', 'r', encoding='utf-8') as f:
+                with open(TAGGED_RECORDS_PATH, 'r', encoding='utf-8') as f:
                     corpus_data = [json.loads(line) for line in f]
-                    self.insert_records(corpus_data)  # 调用 insert_records 方法插入语料库数据
+                    print(len(corpus_data))
+                    # 处理使用外部脚本生成的tagged_corpus_data
+                    if "page_content" in corpus_data[0].keys():  # 检查是否有page_content字段
+                        normalized_corpus_data = []
+                        for record in corpus_data:
+                            normalized_record_data = {}
+                            normalized_record_data['content'] = record.get("page_content", "")  # 提取page_content字段
+                            normalized_record_tags = flatten_nested_structure(record.get("metadata", {}))  # 提取metadata字段中的tags字段
+                            normalized_record_data['tags'] = normalized_record_tags  # 提取tags字段
+                            normalized_corpus_data.append(normalized_record_data)
+
+                        insert_message = self.insert_records(normalized_corpus_data)
+                        print(f"insert_message: {insert_message}"  )
+                    else:
+                        self.insert_records(corpus_data)  # 调用 insert_records 方法插入语料库数据
+                    self.collection.flush()
                     return {
                         "status": 'success',
                         "message": f"已加载缓存语料库 {self.corpus_path}中的{len(corpus_data)}条记录。"
@@ -102,7 +121,7 @@ class NaviSearchCore:
                 corpus_data = [json.loads(line) for line in f]
                 tagged_corpus_data = self.tagger.RetrievalTimeTagging(corpus_data)  # 调用 RetrievalTimeTagging 方法生成标签
                 # 持久化到本地文件
-                with open('Data/Records/5G行业应用安全评估测试指引_tagged.jsonl', 'w', encoding='utf-8') as f:
+                with open(TAGGED_RECORDS_PATH, 'w', encoding='utf-8') as f:
                     for index, record in enumerate(tagged_corpus_data):
                         record["embedding"] = get_embedding(record["content"])  # 生成 embedding，假设 get_embedding 是一个函数来生成 embedding
                         tagged_corpus_data[index]["embedding"] = record["embedding"]
@@ -315,7 +334,7 @@ class NaviSearchCore:
                 query_text=query_text,
                 top_k=20
             )
-            # print(f"初次召回 {len(retrieval_records)} 个结果。")
+            print(f"初次召回 {len(retrieval_records)} 个结果。")
             ranked_records, ranked_tags = self.search_engine.rerank(
                 filter_tags=active_filter_tags,
                 retrieval_records = retrieval_records,
@@ -375,7 +394,7 @@ class NaviSearchCore:
             print(f"过滤标签：{current_filter}")
             print(f"剩余 {len(remaining_records)} 个结果。")
             if len(remaining_records) <= stop_size:
-                import os
+
                 # os.system('cls')
                 print("*"*50)
                 print(f"最终过滤标签：{current_filter}")
@@ -394,7 +413,7 @@ class NaviSearchCore:
 
 if __name__ == "__main__":
     core = NaviSearchCore(tags_design_path="Data/Tags/tags_design.json")
-    query = """N4接口需要进行哪些安全评估？。
+    query = """核查 | 测试需求 | 1. 核心网各网元的登录授权。 |\n| 执行步骤 | 1. 登录相关网元设备，输入MML命令：LST TLSCFG或LST INNERTLSMODE，核查相关配置。 |\n| 预期结果 | 1. 核心网元均开启了TLS保护。 |", "metadata": {"AssessmentObject": ["设备命令行/配置"], "ComplianceReference": [], "ConfigurationItem": ["LST TLSCFG", "LST INNERTLSMODE"], "CustomKeywords": [], "Interface": [], "NetworkDomain": "核心网", "NetworkElement": [], "Protocol": ["TLS"], "SecurityDomain": ["机密性保护(Confidentiality)", "完整性保护(Integrity)"], "SecurityMechanism": ["TLS"], "TechnologyFocus": ["5G核心网(5GC)"], "ThreatVulnerability": [], "Header 1": "5G行业应用安全评估", "Header 2": "5G行业应用安全评估测试指引", "Header 3": "3. 5G 专网安全", "Header 4": "3.2 接口和信令安全", "Header 5": "3.2.5 核心网服务化接口安全", "Header 6": "3.2.5.1 5G专网核心网的NF间服务化接口应支持3GPP标准要求的HTTP2.0协议及参数配置，支持使用TLS提供安全保护的能力。
 """
     retrieval_response = core.perform_filter_search(query_text = query)
     retrieval_str = retrieval_response.get("ranked_records")

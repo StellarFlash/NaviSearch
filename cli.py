@@ -46,6 +46,7 @@ class NaviSearchCLI:
             print(f"当前使用的集合: {current_collection}")
 
         elif command == '/collection' and content == 'count':
+            collection_name = self.core.get_current_collection()
             count = self.core.collection.num_entities
             print(f"集合 {collection_name} 中的实体数量: {count}")
 
@@ -60,9 +61,9 @@ class NaviSearchCLI:
                 print("----------")
 
         elif command == '/collection' and content == 'list':
-            collections = self.core.list_collections()
+            list_collection_response = self.core.list_collections()
             print("所有集合:")
-            for collection in collections:
+            for collection in list_collection_response.get('collections', ''):
                 print(f"- {collection}")
 
         elif command == '/collection' and content == 'use' and collection_name:
@@ -135,7 +136,6 @@ class NaviSearchCLI:
                 elif user_input.startswith(('/tag', '/tags')):
                     self._handle_tag_command(user_input)
                 else :
-                    # user_input.startswith('/query ')
                     if user_input.startswith('/query '):
                         query_text = user_input[len('/query '):].strip()
                     else:
@@ -152,8 +152,9 @@ class NaviSearchCLI:
                             print(record.get("content"[:300]))
                             print(record.get("tags"))
 
-                        print("*"*50)
+
                         print(f"推荐过滤标签: {ranked_tags[:20]}")
+                        print("*"*50)
                     else:
                         print(f"\n搜索过程中发生错误: {query_result['message']}\n")
 
@@ -169,6 +170,6 @@ class NaviSearchCLI:
                 break
 
 if __name__ == "__main__":
-    search_core = NaviSearchCore(tags_design_path = "Data/Tags/tags_design.json")  # 实例化 NaviSearchCore 类
+    search_core = NaviSearchCore(init_collection=False,tags_design_path = "Data/Tags/tags_design.json")  # 实例化 NaviSearchCore 类
     cli = NaviSearchCLI(search_core)  # 实例化 NaviSearchCLI 类
     cli.run()  # 运行 CLI 应用
