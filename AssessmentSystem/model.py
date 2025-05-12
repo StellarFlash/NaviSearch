@@ -1,5 +1,6 @@
 # models.py
 # 定义系统的数据模型
+import json
 from enum import Enum
 from typing import List, Dict, Optional
 from pydantic import BaseModel
@@ -26,18 +27,30 @@ class AssessmentSpecItem(BaseModel):
     content: str             # 内容详情
     method: str = "default"  # 评估方法，默认为'default'
 
-    class Config:
-        extra = "ignore"  # 忽略JSON中的额外字段
-
-class EvidenceMaterial(BaseModel):
+class EvidenceMaterial(BaseModel): # 让替代类也继承 BaseModel
     """证据材料数据结构"""
-    content: str                         # 文本内容
-    tags: Dict = None                         # 标签字典，默认为空
-    source: Optional[str] = "unknown"         # 数据来源，默认'unknown'
-    embedding: Optional[List[float]] = None   # 嵌入向量(可选)
-    project: Optional[str] = None             # 所属项目(可选)
-    collection_time: Optional[int] = None     # 采集时间戳(可选)
-    collector: Optional[str] = None           # 采集人(可选)
+    content: str                                 # 文本内容
+    tags: Dict = {}                              # 标签字典，默认为空字典
+    source: Optional[str] = "unknown"            # 数据来源，默认'unknown'
+    embedding: Optional[List[float]] = None      # 嵌入向量(可选)
+    project: Optional[str] = None                # 所属项目(可选)
+    collection_time: Optional[str] = None        # 采集时间，修改为 Optional[str]
+    collector: Optional[str] = None              # 采集人(可选)
+
+    def model_dump_json(self, ensure_ascii=False):
+            # 模拟 Pydantic v1 的 json() 方法，兼容 ensure_ascii
+            # 在 Pydantic v2+, model_dump_json 不直接接受 ensure_ascii
+            # 这里手动使用 json.dumps 以保留 ensure_ascii 功能
+            data = {
+                "content": self.content,
+                "tags": self.tags,
+                "source": self.source,
+                "project": self.project,
+                "collector": self.collector,
+                "collection_time": self.collection_time,
+                "embedding": self.embedding
+            }
+            return json.dumps(data, ensure_ascii=ensure_ascii)
 
 class EvidenceSearchParams(BaseModel):
     """证据搜索参数数据结构"""
