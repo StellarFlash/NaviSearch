@@ -2,17 +2,17 @@ from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
-# 假设 Visitor.py 文件位于与此文件相同的目录下
+# 假设 VisitorCore.py 文件位于与此文件相同的目录下
 try:
-    from Visitor import NaviSearchVisitor, DEFAULT_MILVUS_HOST, DEFAULT_MILVUS_PORT, DEFAULT_MILVUS_TOKEN, DEFAULT_COLLECTION_NAME
-    # 导入 Visitor.py 中可能需要的模型和函数
+    from VisitorCore import NaviSearchVisitor, DEFAULT_MILVUS_HOST, DEFAULT_MILVUS_PORT, DEFAULT_MILVUS_TOKEN, DEFAULT_COLLECTION_NAME
+    # 导入 VisitorCore.py 中可能需要的模型和函数
     # from utils import get_embedding, get_response, get_filter, flatten_nested_structure
     # from Search.SearchEngine import SearchEngine
     # from Tagger.SemanticTagger import SemanticTagger
     # from pymilvus import MilvusClient, FieldSchema, CollectionSchema, Collection, DataType, Connections
 except ImportError as e:
-    print(f"Error importing Visitor module or its dependencies: {e}")
-    print("Please ensure Visitor.py and its required modules (Search, Tagger, utils, pymilvus) are in the correct path.")
+    print(f"Error importing VisitorCore module or its dependencies: {e}")
+    print("Please ensure VisitorCore.py and its required modules (Search, Tagger, utils, pymilvus) are in the correct path.")
     # 如果导入失败，可以选择在这里退出或者在服务启动时抛出错误
     raise e
 
@@ -22,7 +22,7 @@ SERVICE_PORT = 8000      # 服务端口
 
 # --- 全局 Visitor 实例 ---
 # 在应用启动时创建 Visitor 实例
-# 注意：这将使用 Visitor.py 中定义的默认 Milvus 连接参数
+# 注意：这将使用 VisitorCore.py 中定义的默认 Milvus 连接参数
 # 如果需要动态配置 Milvus 连接，可能需要在 /connect 接口中传递参数，
 # 或者考虑将 Visitor 实例的创建延迟到 /connect 被调用时。
 # 为了遵循用户要求使用全局变量控制服务IP/Port和封装Visitor，我们在这里创建全局Visitor。
@@ -189,17 +189,25 @@ def search_endpoint(request: SearchRequest):
             detail=f"Unsupported search mode: {request.mode}. Supported modes are 'standard' and 'agentic'."
         )
 
+    print(request.query_text)
+    print(request.filter_tags)
+    print(request.mode)
+    print(request.retrieval_top_k)
+    print(request.rerank_strategy)
+    print(search_kwargs)
     try:
         # Check if Milvus is connected before searching
         if not visitor._is_connected:
              # Attempt to connect automatically if not connected (optional, depends on desired behavior)
              # Or just raise an error requiring the client to call /connect first.
              # Let's require the client to connect first for clearer state management.
-             raise HTTPException(
-                 status_code=status.HTTP_424_FAILED_DEPENDENCY,
-                 detail="Milvus is not connected. Please call /connect first."
-             )
-
+            visitor.connect_milvus()  # This will raise an error if connection fails, which will be caught by FastAP
+        print(request.query_text)
+        print(request.filter_tags)
+        print(request.mode)
+        print(request.retrieval_top_k)
+        print(request.rerank_strategy)
+        print(search_kwargs)
         # Perform the search
         search_result = visitor.search(
             query_text=request.query_text,
@@ -209,7 +217,7 @@ def search_endpoint(request: SearchRequest):
             rerank_strategy=request.rerank_strategy,
             **search_kwargs # Pass mode-specific parameters
         )
-
+        print(search_result)
         if search_result.get('status') == 'error':
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=search_result.get('message'))
         elif search_result.get('status') == 'fail': # Agentic search might 'fail' to converge

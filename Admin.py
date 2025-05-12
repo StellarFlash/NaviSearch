@@ -18,7 +18,6 @@ import traceback
 import json
 from typing import List, Dict, Optional, Any
 from pymilvus import MilvusClient, FieldSchema, CollectionSchema, Collection, DataType, Connections
-from Search.SearchEngine import SearchEngine # 假设 SearchEngine 存在且路径正确
 from Tagger.SemanticTagger import SemanticTagger # 假设 SemanticTagger 存在且路径正确
 from utils import get_embedding, get_response, get_filter, flatten_nested_structure # 假设 utils 中的函数存在且路径正确
 
@@ -51,7 +50,6 @@ class NaviSearchAdmin:
         self.corpus_path = corpus_path
 
         self.client = MilvusClient(token=self.milvus_token, host=self.milvus_host, port=self.milvus_port)
-        self.tagger = SemanticTagger(tags_design_path) if tags_design_path else None # Tagger只在Admin中用于数据预处理
 
         # 定义字段和Schema，这些是Collection的基础结构
         self.fields = [
@@ -129,8 +127,6 @@ class NaviSearchAdmin:
         """加载语料库到当前Collection"""
         if not self.corpus_path:
             return {'status': 'warning', 'message': "Corpus path not specified."}
-        if not self.tagger and not use_cache: # 如果不用缓存且没有tagger，则无法处理原始数据
-             return {'status': 'error', 'message': "SemanticTagger not initialized, cannot process raw corpus without cache."}
 
         try:
             corpus_data_to_insert = []
@@ -166,8 +162,6 @@ class NaviSearchAdmin:
                 with open(self.corpus_path, 'r', encoding='utf-8') as f:
                     raw_corpus_data = [json.loads(line) for line in f]
 
-                if not self.tagger: # Should have been caught earlier but as a safeguard
-                    return {'status': 'error', 'message': "SemanticTagger not initialized, cannot process raw corpus."}
 
                 print(f"Tagging {len(raw_corpus_data)} records from raw corpus...")
                 # 假设 tagger.RetrievalTimeTagging 返回 [{"content": "...", "tags": [...]}, ...]

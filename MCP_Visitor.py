@@ -16,7 +16,7 @@ from mcp.server.fastmcp import Context, FastMCP, Image # Include Image if needed
 # --- Start of NaviSearchVisitor Class Code (adapted for lifespan) ---
 from pymilvus import MilvusClient, Collection, Connections
 
-from Visitor import NaviSearchVisitor  # 导入 NaviSearchVisitor 类及其依赖
+from VisitorCore import NaviSearchVisitor  # 导入 NaviSearchVisitor 类及其依赖
 
 DEFAULT_COLLECTION_NAME = "navi_search_collection"
 DEFAULT_MILVUS_TOKEN = "root:Milvus"

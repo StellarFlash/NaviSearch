@@ -1,0 +1,20 @@
+{"content": "The system uses AES-256 encryption for all data at rest.", "tags": {"security": "high", "category": "encryption"}, "source": "security_audit_2023", "project": "Infrastructure Upgrade", "collection_time": 1672531200, "collector": "John Doe"}
+{"content": "User authentication requires multi-factor authentication for all admin accounts.", "tags": {"security": "critical", "category": "authentication"}, "source": "security_policy_v2.1", "project": "Security Compliance"}
+{"content": "All database backups are performed daily and stored in geographically separate locations.", "tags": {"reliability": "high", "category": "backup"}, "source": "operations_manual", "collection_time": 1672617600}
+{"content": "The application logs all failed login attempts and alerts administrators after 5 consecutive failures.", "tags": {"security": "medium", "category": "logging"}, "source": "system_documentation"}
+{"content": "Third-party libraries are reviewed quarterly for security vulnerabilities.", "tags": {"security": "medium", "category": "vulnerability"}, "source": "dev_ops_report", "collector": "Jane Smith"}
+{"content": "All customer data is encrypted in transit using TLS 1.2 or higher.", "tags": {"security": "high", "category": "encryption"}, "source": "security_audit_2023", "project": "Data Protection"}
+{"content": "The system maintains an uptime of 99.95% over the last 12 months.", "tags": {"reliability": "high", "category": "availability"}, "source": "performance_report_2023", "collection_time": 1672704000}
+{"content": "New employees receive security training within 30 days of hiring.", "tags": {"compliance": "required", "category": "training"}, "source": "hr_policies"}
+{"content": "Access to production environments requires VPN and separate credentials.", "tags": {"security": "high", "category": "access_control"}, "source": "it_security_guide"}
+{"content": "All API endpoints require authentication tokens with limited lifetimes.", "tags": {"security": "high", "category": "api_security"}, "source": "api_documentation", "project": "API Gateway"}
+{"content": "The change management process requires peer review for all production deployments.", "tags": {"process": "standard", "category": "change_management"}, "source": "dev_ops_manual"}
+{"content": "Incident response procedures are tested biannually.", "tags": {"security": "medium", "category": "incident_response"}, "source": "security_audit_2023", "collector": "Mike Johnson"}
+{"content": "Data retention policies automatically delete inactive user data after 5 years.", "tags": {"compliance": "required", "category": "data_retention"}, "source": "data_governance_policy"}
+{"content": "The system supports role-based access control with 5 predefined privilege levels.", "tags": {"security": "high", "category": "access_control"}, "source": "system_architecture"}
+{"content": "All servers run with the latest security patches applied within 30 days of release.", "tags": {"security": "high", "category": "patching"}, "source": "vulnerability_scan_report"}
+{"content": "The disaster recovery plan is tested annually with full documentation.", "tags": {"reliability": "critical", "category": "disaster_recovery"}, "source": "dr_plan_2023", "collection_time": 1672790400}
+{"content": "Code reviews are mandatory for all changes to core systems.", "tags": {"quality": "high", "category": "code_review"}, "source": "engineering_standards"}
+{"content": "The privacy policy clearly explains data collection and usage practices.", "tags": {"compliance": "required", "category": "privacy"}, "source": "public_website"}
+{"content": "Penetration testing is conducted by an independent third party annually.", "tags": {"security": "high", "category": "pentesting"}, "source": "security_audit_2023", "project": "Annual Security Review"}
+{"content": "All sensitive data is masked in application logs.", "tags": {"security": "medium", "category": "logging"}, "source": "developer_guidelines", "collector": "Sarah Williams"}
