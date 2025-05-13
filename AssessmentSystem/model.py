@@ -11,6 +11,7 @@ class Judgement(str, Enum):
     NON_COMPLIANT = "不符合"
     NOT_APPLICABLE = "不涉及"
     NOT_PROCESSED = "未处理"
+    ERROR = "error" # Added for robustness
 
 class AssessmentStatus(str, Enum):
     """评估状态枚举"""
@@ -56,6 +57,7 @@ class EvidenceSearchParams(BaseModel):
     """证据搜索参数数据结构"""
     query_text: str    # 查询文本，默认为空字符串
     filter_tags: List[str] = None
+    terminated: bool = False
 
 class EvidenceSearchResult(BaseModel):
     """证据搜索结果数据结构"""

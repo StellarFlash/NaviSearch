@@ -8,11 +8,10 @@ try:
     # 导入 VisitorCore.py 中可能需要的模型和函数
     # from utils import get_embedding, get_response, get_filter, flatten_nested_structure
     # from Search.SearchEngine import SearchEngine
-    # from Tagger.SemanticTagger import SemanticTagger
     # from pymilvus import MilvusClient, FieldSchema, CollectionSchema, Collection, DataType, Connections
 except ImportError as e:
     print(f"Error importing VisitorCore module or its dependencies: {e}")
-    print("Please ensure VisitorCore.py and its required modules (Search, Tagger, utils, pymilvus) are in the correct path.")
+    print("Please ensure VisitorCore.py and its required modules (Search, utils, pymilvus) are in the correct path.")
     # 如果导入失败，可以选择在这里退出或者在服务启动时抛出错误
     raise e
 

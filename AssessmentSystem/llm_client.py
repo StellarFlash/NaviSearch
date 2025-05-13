@@ -20,13 +20,14 @@ class LLMAssessmentClient:
     一个与 LLM 服务交互的客户端。
     使用 OpenAI 风格的 API。
     """
-    def __init__(self, llm_base_url: str = None, api_key: str = None, model_name: str = "qwen-plus-latest", temperature: float = 0.0):
+    def __init__(self, llm_base_url: str = None, api_key: str = None, model_name: str = "qwen-plus-latest", temperature: float = 0.0, max_search_iterations = 5):
 
         # 如果没有显式提供，则从环境变量加载
         self.base_url = llm_base_url or os.getenv("LLM_BASE_URL")
         self.api_key = api_key or os.getenv("LLM_API_KEY")
         self.model_name = model_name or os.getenv("LLM_MODEL")
         self.temperature = temperature # Add temperature as an initialization parameter
+        self.max_search_iterations = max_search_iterations # Add max_search_iterations as an initialization parameter
 
         if not self.base_url:
             raise ValueError("LLM_BASE_URL 必须设置，可以作为参数或在 .env 文件中设置")
@@ -39,56 +40,220 @@ class LLMAssessmentClient:
 
         self.client = OpenAI(base_url = self.base_url,api_key = self.api_key) # Initialize OpenAI client with base_url and api_key (if provided)are headers for API calls (if using an API key)
 
-    def generate_search_params(self, spec_item: AssessmentSpecItem) -> EvidenceSearchParams:
+    def generate_search_params(
+        self,
+        spec_item: AssessmentSpecItem,
+        iteration: int,
+        current_query_text: Optional[str] = None,
+        current_filter_tags: Optional[List[str]] = None,
+        ranked_docs: Optional[List[EvidenceSearchResult]] = None,
+        ranked_tags: Optional[List[str]] = None
+    ) -> EvidenceSearchParams:
         """
-        生成搜索参数，根据评估规范内容生成查询文本。
-        Args:
-            spec_item: 评估规范条目。
-        Returns:
-            一个包含查询文本的 EvidenceSearchParams 对象。
-        """
-        return EvidenceSearchParams(query_text=spec_item.content + "\n" + spec_item.method + "\n", tags = [])  # 简单地使用 spec_item 的内容作为查询文本
+        生成或优化证据搜索参数，支持迭代。
+        在第一次迭代时，它基于评估规范直接构造查询。
+        在后续迭代中，它调用LLM根据先前的搜索结果（ranked_docs, ranked_tags）和当前参数来优化查询和过滤标签。
 
-    def generate_assessment(self, spec_item: AssessmentSpecItem, evidences: List[EvidenceSearchResult]) -> Dict:
+        Args:
+            spec_item: 当前评估规范条目。
+            iteration: 当前迭代次数 (0-based)。
+            current_query_text: 上一次迭代使用的查询文本 (用于后续迭代)。
+            current_filter_tags: 上一次迭代使用的过滤标签 (用于后续迭代)。
+            ranked_docs: 上一次搜索返回的排序后的文档列表。
+            ranked_tags: 上一次搜索返回的推荐标签列表。
+
+        Returns:
+            一个 EvidenceSearchParams 对象，包含新的查询文本、过滤标签和终止状态。
         """
-        使用 LLM 生成评估结论 (OpenAI 风格的 API 调用).
+        print(f"生成搜索参数 - 迭代: {iteration + 1}/{self.max_search_iterations}")
+
+        if iteration == 0:
+            # 第一次迭代：直接使用规范内容构建查询，无过滤标签
+            initial_query_text = f"{spec_item.content}\n评估方法: {spec_item.method}"
+            # 第一次迭代后是否终止取决于最大迭代次数
+            terminated_after_first = self.max_search_iterations <= 1
+            print(f"  首次迭代，生成初始查询参数。终止状态: {terminated_after_first}")
+            return EvidenceSearchParams(
+                query_text=initial_query_text,
+                filter_tags=[],
+                terminated=terminated_after_first
+            )
+
+        # 后续迭代或达到最大迭代次数前的最后一次机会调用LLM
+        if iteration >= self.max_search_iterations:
+            print(f"  已达到最大迭代次数 ({self.max_search_iterations})。终止搜索。")
+            return EvidenceSearchParams(
+                query_text=current_query_text or f"{spec_item.content}\n评估方法: {spec_item.method}", # Fallback if current_query_text is None
+                filter_tags=current_filter_tags or [],
+                terminated=True
+            )
+
+        # --- 为LLM构建Prompt (迭代 > 0) ---
+        prompt_template_iterative = """
+你是一个协助进行网络安全评估证据检索的AI助手。
+请根据以下评估规范、当前的查询参数、以及上一轮检索到的文档和推荐标签，生成一组更优化的查询参数，以帮助找到最相关的证据。
+
+评估规范条目ID: {spec_item_id}
+原始评估规范内容:
+{spec_item_content}
+原始评估方法:
+{spec_item_method}
+
+当前迭代的上下文信息:
+当前查询文本: {current_query_text}
+当前已选过滤标签: {current_filter_tags_str}
+
+上一轮检索到的主要文档摘要 (最多5条):
+{formatted_ranked_docs}
+
+上一轮推荐的相关标签 (最多10条):
+{formatted_ranked_tags}
+
+你的任务是：
+1.  分析以上所有信息。
+2.  决定是否需要优化当前的“查询文本”。如果需要，提供一个新的“new_query_text”。如果不需要，可以返回当前的查询文本或留空。
+3.  根据所有信息，建议一组新的“过滤标签 (new_filter_tags)”列表。这些标签应有助于更精确地定位相关证据。你可以从推荐标签中选择，也可以生成新的、更具体的标签。如果不需要新的过滤标签，可以返回空列表。
+4.  判断是否已经找到了足够精确的参数，或者是否应该终止迭代搜索 ("terminate_search": true/false)。如果认为当前的文档和标签已经足够好，或者进一步优化意义不大，则应终止。
+
+输出格式必须为JSON，包含以下字段:
+"new_query_text": "优化后的查询文本，如果无优化则为空字符串或当前文本",
+"new_filter_tags": ["新的过滤标签列表"],
+"terminate_search": true  // 或 false
+"""
+        formatted_ranked_docs_str = "无相关文档。"
+        if ranked_docs:
+            doc_summaries = []
+            for i, doc in enumerate(ranked_docs[:5]): # 最多显示前5个文档
+                content_preview = doc.content
+                if len(doc.content) > 200:
+                    content_preview = doc.content[:200] + "..."
+                doc_summaries.append(f"  文档 {i+1} (来源: {doc.source}): {content_preview}\n    标签: {doc.tags if hasattr(doc, 'tags') and doc.tags else '无'}")
+            formatted_ranked_docs_str = "\n".join(doc_summaries)
+
+        formatted_ranked_tags_str = "无推荐标签。"
+        if ranked_tags:
+            formatted_ranked_tags_str = ", ".join(ranked_tags[:10]) # 最多显示前10个推荐标签
+
+        prompt = prompt_template_iterative.format(
+            spec_item_id=spec_item.id,
+            spec_item_content=spec_item.content,
+            spec_item_method=spec_item.method,
+            current_query_text=current_query_text or "无 (请基于规范内容生成)",
+            current_filter_tags_str=str(current_filter_tags) if current_filter_tags else "无",
+            formatted_ranked_docs=formatted_ranked_docs_str,
+            formatted_ranked_tags=formatted_ranked_tags_str
+        )
+        # print(f"  迭代 {iteration+1} Prompt 发送给 LLM:\n{prompt[:500]}...") # 打印部分Prompt进行调试
+
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.temperature, # Use a slightly higher temperature for creative refinement
+                response_format={"type": "json_object"} if "qwen" in self.model_name else None
+            )
+
+            llm_response_content = response.choices[0].message.content
+            if not llm_response_content:
+                print("  LLM返回了空响应，使用当前参数并终止。")
+                return EvidenceSearchParams(
+                    query_text=current_query_text or f"{spec_item.content}\n评估方法: {spec_item.method}",
+                    filter_tags=current_filter_tags or [],
+                    terminated=True
+                )
+
+            llm_params = json.loads(llm_response_content)
+
+            new_query = llm_params.get("new_query_text", "").strip()
+            if not new_query: # 如果LLM返回空查询文本，则沿用上一次的或初始的
+                new_query = current_query_text or f"{spec_item.content}\n评估方法: {spec_item.method}"
+
+            new_tags = llm_params.get("new_filter_tags", [])
+            if not isinstance(new_tags, list): # 确保是列表
+                print(f"  LLM返回的new_filter_tags不是列表: {new_tags}。将使用空标签列表。")
+                new_tags = []
+
+            terminate_flag = llm_params.get("terminate_search", False)
+
+            # 如果LLM没有要求终止，但这是允许的最大迭代次数前的最后一次调用，则强制终止
+            if not terminate_flag and (iteration + 1) >= self.max_search_iterations:
+                terminate_flag = True
+                print(f"  LLM未要求终止，但已达到最大迭代次数前的最后一次调用。强制终止。")
+
+            print(f"  LLM生成的新参数: Query='{new_query[:100]}...', Tags={new_tags}, Terminate={terminate_flag}")
+            return EvidenceSearchParams(query_text=new_query, filter_tags=new_tags, terminated=terminate_flag)
+
+        except json.JSONDecodeError as e:
+            print(f"  无法解析LLM的JSON响应: {str(e)}。使用当前参数并终止。")
+            return EvidenceSearchParams(
+                query_text=current_query_text or f"{spec_item.content}\n评估方法: {spec_item.method}",
+                filter_tags=current_filter_tags or [],
+                terminated=True
+            )
+        except openai.APIError as e:
+            print(f"  OpenAI API调用错误: {str(e)}。使用当前参数并终止。")
+            return EvidenceSearchParams(
+                query_text=current_query_text or f"{spec_item.content}\n评估方法: {spec_item.method}",
+                filter_tags=current_filter_tags or [],
+                terminated=True
+            )
+        except Exception as e:
+            print(f"  生成搜索参数时发生意外错误: {str(e)}。使用当前参数并终止。")
+            return EvidenceSearchParams(
+                query_text=current_query_text or f"{spec_item.content}\n评估方法: {spec_item.method}",
+                filter_tags=current_filter_tags or [],
+                terminated=True
+            )
+
+    def generate_assessment(self, spec_item: AssessmentSpecItem, evidences: List[EvidenceSearchResult]) -> Conclusion:
+        """
+        使用 LLM 生成评估结论 (OpenAI 风格的 API 调用)。
+        LLM 被要求输出采纳的证明材料的序号，函数随后解析这些序号以引用原始证明材料。
+
         Args:
             spec_item: 评估规范条目。
             evidences: NaviSearch 找到的相关证据片段列表。
+
         Returns:
-            一个包含 'judgement' 和 'comment' 键的字典。
+            一个 Conclusion 对象，其中 evidence 字段包含对原始材料的引用。
         """
         print(f"调用 LLM，规范 ID {spec_item.id}，证据数量: {len(evidences)}...")
-        # --- 构建 Prompt（类似于设计说明） ---
+
+        # --- 构建 Prompt ---
+        # 修改 Prompt，要求 LLM 返回选中证据的序号列表
         prompt_template = """
-请根据以下网络安全评估规范条目和提供的证明材料，给出评估结论，并附上支持结论的材料来源。
+请根据以下网络安全评估规范条目和提供的证明材料，给出评估结论。
 判断的取值应为以下三者之一：符合、不符合、不涉及。
 并提供简要的补充说明。
+同时，请从提供的证明材料列表中，选择并列出所有支持你结论的材料的序号（从1开始计数）。
+
 评估规范条目ID: {spec_item_id}
 评估规范标题: {spec_item_heading}
 评估规范内容: {spec_item_content}
 评估方法: {spec_item_method}
+
 相关证明材料:
 {formatted_evidences}
-输出格式为JSON:
+
+输出格式为JSON，包含以下字段:
 "judgement": "符合/不符合/不涉及",
 "comment": "补充说明...",
-"evidence": [
-    "source":"材料1",
-    "content":"与评估直接相关的证明材料的段落，使用原始表达，保留完整段落"
+"selected_evidence_indices": [序号列表] // 例如: [1, 3] 表示选择了第1条和第3条材料
 
-    "source":"材料2",
-    "content":"与评估直接相关的证明材料的段落"
-]
-
+请确保 "selected_evidence_indices" 是一个包含整数序号的列表。如果没有任何材料支持你的结论，请返回一个空列表 []。
 """
-        # print("prompt_template:", prompt_template)  # 打印完整的 Prompt，用于调试
+
         formatted_evidences = ""
         if evidences:
             for i, ev in enumerate(evidences):
-                formatted_evidences += f"材料 {i+1} (来源: {ev.source}):\n{ev.content[:200]}...\n\n" # 限制 prompt 中的证据内容长度
+                # 为每个证据编号，并在Prompt中展示部分内容以控制长度
+                content_preview = ev.content
+                if len(ev.content) > 500:  # 限制每个证据在Prompt中的预览长度
+                    content_preview = ev.content[:500] + "..."
+                formatted_evidences += f"材料 {i+1} (来源: {ev.source}):\n{content_preview}\n\n"
         else:
             formatted_evidences = "无相关证明材料。"
+
         prompt = prompt_template.format(
             spec_item_id=spec_item.id,
             spec_item_heading=spec_item.heading,
@@ -96,54 +261,95 @@ class LLMAssessmentClient:
             spec_item_method=spec_item.method,
             formatted_evidences=formatted_evidences
         )
-        # print("生成的 Prompt:", prompt)  # 打印完整的 Prompt，用于调试
-        conclusion = Conclusion(
-            spec_item_id=spec_item.id,
-            judgement=Judgement.NOT_PROCESSED,  # 默认值
-            comment="LLM返回的响应格式不正确",
+        # print("生成的 Prompt:", prompt) # 用于调试
+
+        # 初始化一个默认的 Conclusion 对象，用于在出错时返回
+        default_conclusion = Conclusion(
+            judgement=Judgement.NOT_PROCESSED,
+            comment="LLM调用或响应处理失败",
             evidence=[]
         )
-        # --- 解析 OpenAI API 响应 ---
+
+        # --- 调用 OpenAI API 并解析响应 ---
         try:
             response = self.client.chat.completions.create(
                 model=self.model_name,
                 messages=[{"role": "user", "content": prompt}],
                 temperature=self.temperature,
-                response_format={"type": "json_object"} if self.model_name == "qwen-plus-latest" else None
+                response_format={"type": "json_object"} if "qwen" in self.model_name else None # 特定模型支持 JSON object format
             )
 
-            # 解析响应
-            # 解析响应并验证
-            llm_response = json.loads(response.choices[0].message.content)
+            llm_response_content = response.choices[0].message.content
+            if not llm_response_content:
+                default_conclusion.comment = "LLM返回了空响应。"
+                return default_conclusion
 
-            if not all(key in llm_response for key in ["judgement", "comment", "evidence"]):
-                conclusion.comment = "LLM响应缺少必要的字段"
-                return conclusion
+            llm_response = json.loads(llm_response_content)
 
-            # 将LLM返回的judgement字符串转换为Judgement枚举
+            # 验证响应中是否包含所有必要字段
+            required_keys = ["judgement", "comment", "selected_evidence_indices"]
+            if not all(key in llm_response for key in required_keys):
+                missing_keys = [key for key in required_keys if key not in llm_response]
+                default_conclusion.comment = f"LLM响应缺少必要的字段: {', '.join(missing_keys)}。"
+                return default_conclusion
+
+            # 解析评估结论 (judgement)
             try:
-                judgement = Judgement(llm_response["judgement"].lower())
+                judgement_str = llm_response.get("judgement", "").strip().lower()
+                if not judgement_str: # 处理空字符串的情况
+                     raise ValueError("Judgement string is empty")
+                judgement = Judgement(judgement_str)
             except ValueError:
-                conclusion.comment = f"无效的评估结论: {llm_response['judgement']}"
-                return conclusion
+                default_conclusion.comment = f"LLM返回了无效的评估结论: '{llm_response.get('judgement', '')}'。"
+                # 尝试保留LLM的原始评论，如果它提供了关于为什么无法判断的线索
+                if llm_response.get("comment"):
+                    default_conclusion.comment += f" LLM原始评论: {llm_response.get('comment')}"
+                return default_conclusion
 
-            # 构建并返回Conclusion对象
+            llm_comment = llm_response.get("comment", "") # 获取LLM的原始评论
+
+            # 解析 selected_evidence_indices 并获取引用的原始证据
+            selected_indices_from_llm = llm_response.get("selected_evidence_indices")
+            referenced_evidences: List[EvidenceSearchResult] = []
+            processing_comment = llm_comment # 初始化处理评论为LLM的原始评论
+
+            if not isinstance(selected_indices_from_llm, list):
+                processing_comment = f"LLM返回的 'selected_evidence_indices' 不是一个列表 (实际类型: {type(selected_indices_from_llm).__name__})。LLM原始评论: '{llm_comment}'"
+            else:
+                invalid_indices_found = False
+                for index_val in selected_indices_from_llm:
+                    if not isinstance(index_val, int):
+                        processing_comment = f"LLM返回的 'selected_evidence_indices' 包含非整数值: '{index_val}'。LLM原始评论: '{llm_comment}'"
+                        invalid_indices_found = True
+                        break
+
+                    actual_index = index_val - 1 # 将1-based转换为0-based
+                    if 0 <= actual_index < len(evidences):
+                        referenced_evidences.append(evidences[actual_index])
+                    else:
+                        processing_comment = f"LLM返回的证据序号 '{index_val}' 超出范围 (有效材料序号 1-{len(evidences)})。LLM原始评论: '{llm_comment}'"
+                        invalid_indices_found = True
+                        break
+
+                if invalid_indices_found and judgement == Judgement.NOT_PROCESSED: # 如果因为索引错误导致无法判断
+                    judgement = Judgement.ERROR # 可以设置一个特定的错误状态
+
+            # 构建并返回最终的 Conclusion 对象
             return Conclusion(
-                spec_item_id=spec_item.id,
                 judgement=judgement,
-                comment=llm_response["comment"],
-                evidence=llm_response["evidence"]
+                comment=processing_comment, # 使用处理后的评论
+                evidence=referenced_evidences
             )
 
         except json.JSONDecodeError as e:
-            conclusion.comment = f"无法解析LLM的JSON响应: {str(e)}"
-            return conclusion
-        except openai.APIError as e:
-            conclusion.comment = f"OpenAI API错误: {str(e)}"
-            return conclusion
+            default_conclusion.comment = f"无法解析LLM的JSON响应: {str(e)}。原始响应: '{llm_response_content if 'llm_response_content' in locals() else 'N/A'}'"
+            return default_conclusion
+        except openai.APIError as e: # Catching specific OpenAI API errors
+            default_conclusion.comment = f"OpenAI API调用错误: {str(e)}"
+            return default_conclusion
         except Exception as e:
-            conclusion.comment = f"发生意外错误: {str(e)}"
-            return conclusion
+            default_conclusion.comment = f"处理评估过程中发生意外错误: {str(e)}"
+            return default_conclusion
 
 
 if __name__ == "__main__":

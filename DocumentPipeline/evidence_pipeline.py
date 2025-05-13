@@ -15,7 +15,6 @@ from openai import OpenAI # 用于 MarkItDown 和 Metadata Tagger
 from markitdown import MarkItDown # 用于文档转换和图片理解
 from langchain_openai import ChatOpenAI # 用于 Metadata Tagger
 from langchain_core.documents import Document # Langchain 的 Document 模型
-# from langchain_community.embeddings import DashScopeEmbeddings # 用于生成 Embedding (可选)
 from langchain_community.document_loaders import DirectoryLoader, TextLoader # 用于加载文本文件
 from langchain_community.document_transformers.openai_functions import create_metadata_tagger # 用于元数据标注
 from langchain_text_splitters import RecursiveCharacterTextSplitter, MarkdownHeaderTextSplitter # 用于文档分割
@@ -28,14 +27,13 @@ except ImportError:
     print("警告: 未找到 AssessmentSystem.model 或 EvidenceMaterial 定义。将使用一个简单的字典结构代替。")
     # 如果找不到模型，定义一个简单的字典结构作为替代
     class EvidenceMaterial:
-        def __init__(self, content, tags, source, project, collector, collection_time, embedding=None):
+        def __init__(self, content, tags, source, project, collector, collection_time):
             self.content = content
             self.tags = tags
             self.source = source
             self.project = project
             self.collector = collector
             self.collection_time = collection_time
-            self.embedding = embedding
 
         def model_dump_json(self, ensure_ascii=False):
             """模拟 Pydantic 的 model_dump_json 方法"""
@@ -46,7 +44,6 @@ except ImportError:
                 "project": self.project,
                 "collector": self.collector,
                 "collection_time": self.collection_time,
-                "embedding": self.embedding # 注意：此处 embedding 字段并未在此流水线中生成
             }
             return json.dumps(data, ensure_ascii=ensure_ascii)
 
@@ -59,7 +56,6 @@ DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY")
 # 可能还需要其他 LLM 配置
 LLM_MODEL_TRANSFORM = os.getenv("LLM_MODEL_TRANSFORM", "qwen-vl-ocr") # 用于格式转换和图片理解的 LLM 模型
 LLM_MODEL_TAGGING = os.getenv("LLM_MODEL_TAGGING", "qwen-turbo-latest") # 用于元数据标注的 LLM 模型
-# EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-v3") # 用于生成 Embedding 的模型 (如果需要)
 
 # 输入和输出目录配置
 RAW_DOCS_DIR = "Docs/" # 存放原始文档的目录 (如 .docx, .pdf)
@@ -72,7 +68,6 @@ METADATA_SCHEMA_FILE = "DocumentPipeline/evidence_schema.json" # 请确保此文
 
 
 # --- 工具函数，直接在此模块内实现 ---
-
 def format_ocr_result(ocr_result: str) -> str:
     """
     格式化OCR识别结果，将其转换为Markdown格式，并包裹在特殊标签中。
@@ -125,11 +120,6 @@ def process_markdown_images(md_converter: MarkItDown, markdown_str: str, base_di
             # / 操作符会根据操作系统正确拼接路径
             media_path_obj = relative_media_path_str
 
-            # 使用 .resolve() 来解析最终的绝对路径
-            # strict=True 会检查路径是否存在，不存在则抛出 FileNotFoundError
-            # strict=False 不检查是否存在，只解析路径
-            # 考虑到图片可能在处理过程中被移动或删除，或者路径解析有误，这里先用 strict=False
-            # 在实际处理图片时再捕获 FileNotFoundError
             media_path = media_path_obj
 
             print(f"--- Debug Image Path ---")
@@ -331,7 +321,6 @@ class EvidenceProcessPipeline:
         # MarkItDown 转换器，配置视觉 LLM 以支持图片内容的理解
         self.md_converter = MarkItDown(llm_client=self.llm_client, llm_model=LLM_MODEL_TRANSFORM)
 
-        # 初始化 Langchain LLM 和 Embedding 模型 (用于标注和可能的 Embedding 生成)
         # 用于元数据标注的 LLM
         self.tagging_llm = ChatOpenAI(
             model=LLM_MODEL_TAGGING,
@@ -339,15 +328,6 @@ class EvidenceProcessPipeline:
             api_key=DASHSCOPE_API_KEY,
             temperature=0.0, # 元数据标注通常需要确定性结果，温度设低
         )
-        # Embedding 模型 (如果需要在流水线中生成 embedding)
-        # 如果需要，在这里初始化 self.embeddings
-        # self.embeddings = DashScopeEmbeddings(
-        #     model=EMBEDDING_MODEL,
-        #     api_key=DASHSCOPE_API_KEY,
-        #     base_url=DASHSCOPE_BASE_URL # DashScope 的 Embedding 模型通常不需要 base_url
-        # )
-
-
         # 初始化分割器
         # 按 Markdown 标题分割
         self.markdown_header_splitter = MarkdownHeaderTextSplitter(
@@ -524,13 +504,6 @@ class EvidenceProcessPipeline:
                 for key in keys_to_remove_from_tags:
                     tags.pop(key, None) # 使用 pop 的第二个参数 None，即使 key 不存在也不会报错
 
-                # Embedding 生成 (如果需要)
-                # embedding_vector = None
-                # if hasattr(self, 'embeddings') and self.embeddings:
-                #      try:
-                #           embedding_vector = self.embeddings.embed_query(split.page_content)
-                #      except Exception as e:
-                #           print(f"警告: 生成 embedding 失败，跳过。片段内容开头：{split.page_content[:50]}... 错误: {e}")
                 formatted_collection_date = None
                 if collection_time is not None:
                     try:
@@ -547,7 +520,6 @@ class EvidenceProcessPipeline:
                     "project": project,
                     "collection_time": formatted_collection_date,
                     "collector": collector,
-                    # "embedding": embedding_vector
                 }
                 evidences.append(EvidenceMaterial(**evidence_data))
             except Exception as e:
@@ -560,10 +532,6 @@ class EvidenceProcessPipeline:
             with open(output_file, 'w', encoding='utf-8') as f:
                 # 使用 tqdm 显示写入进度
                 for evidence in tqdm(evidences, desc="写入 JSONL"):
-                    # 调用 model_dump_json()，不再传递 ensure_ascii=False
-                    # 如果需要 ensure_ascii=False 的效果，可以在写入时手动 json.dumps
-                    # 但 model_dump_json 通常会处理 unicode 字符，直接调用即可
-                    # Pydantic v2+ 的 model_dump_json() 返回的是字符串
                     f.write(evidence.model_dump_json() + '\n')
 
             print(f"成功将 {len(evidences)} 条证据保存到 {output_file}")
@@ -616,7 +584,6 @@ class EvidenceProcessPipeline:
             project=project,
             collector=collector,
             collection_time=collection_time
-            # 如果生成了 embedding，这里也需要传递 embedding_vector
         )
 
         print("证据处理流水线执行完毕。")
@@ -624,21 +591,11 @@ class EvidenceProcessPipeline:
 
 # 示例用法
 if __name__ == "__main__":
-    # 确保您的 .env 文件中设置了 DASHSCOPE_BASE_URL 和 DASHSCOPE_API_KEY
-    # 确保安装了 pypandoc 和 pandoc
-    # 确保创建了 Docs/ 目录并将原始文档放入其中
-    # 确保创建了 DocumentPipeline/evidence_schema.json 文件
-
     pipeline = EvidenceProcessPipeline()
 
     # 在运行时指定参数
-    # 您可以从命令行参数、配置文件或数据库中获取这些信息
     my_project = "网络安全评估项目"
     my_collector = "张三" # 或者从某个配置或命令行参数获取
     my_collection_time = int(time.time()) # 如果需要指定一个固定的时间，比如任务开始时间
-    # 如果不指定 collection_time，run 方法将使用当前时间
-
     print(f"准备运行流水线，指定项目: '{my_project}', 采集人: '{my_collector}'")
-
-    # 如果需要指定采集时间，可以这样调用：
     pipeline.run(project=my_project, collector=my_collector, collection_time=my_collection_time)

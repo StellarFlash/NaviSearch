@@ -108,30 +108,6 @@ class AssessmentEngine:
             print("没有找到评估规范，评估结束。")
             return AssessmentReport() # 返回一个空的报告
 
-        # 初始化客户端，确保它们在 worker 之前可用
-        print("初始化 NaviSearch 客户端...")
-        try:
-            navisearch_client = NaviSearchClient(
-                admin_url=self.admin_api_url,
-                visitor_url=self.visitor_api_url,
-                evidence_collection_name=self.evidence_collection_name
-            )
-            print("NaviSearch 客户端初始化成功。")
-        except Exception as e:
-            print(f"NaviSearch 客户端初始化失败: {e}")
-            # 记录所有规范为失败
-            failed_results = [
-                AssessmentResult(
-                    spec_id=item.id,
-                    spec_content=item.content,
-                    status=AssessmentStatus.FAIL,
-                    error_message=f"NaviSearch 客户端初始化失败: {str(e)}"
-                ) for item in spec_items
-            ]
-            report = AssessmentReport(assessment_results=failed_results)
-            report.statics[AssessmentStatus.FAIL] = len(spec_items)
-            return report
-
         print("初始化 LLM 客户端...")
         try:
             llm_client = LLMAssessmentClient(
@@ -155,20 +131,32 @@ class AssessmentEngine:
              report = AssessmentReport(assessment_results=failed_results)
              report.statics[AssessmentStatus.FAIL] = len(spec_items)
              return report
+
+        # 初始化客户端，确保它们在 worker 之前可用
+        print("初始化 NaviSearch 客户端...")
+        try:
+            navisearch_client = NaviSearchClient(
+                admin_url=self.admin_api_url,
+                visitor_url=self.visitor_api_url,
+                evidence_collection_name=self.evidence_collection_name,
+                llm_client = llm_client
+            )
+            print("NaviSearch 客户端初始化成功。")
         except Exception as e:
-            print(f"LLM 客户端初始化失败: {e}")
+            print(f"NaviSearch 客户端初始化失败: {e}")
             # 记录所有规范为失败
             failed_results = [
                 AssessmentResult(
                     spec_id=item.id,
                     spec_content=item.content,
                     status=AssessmentStatus.FAIL,
-                    error_message=f"LLM 客户端初始化失败: {str(e)}"
+                    error_message=f"NaviSearch 客户端初始化失败: {str(e)}"
                 ) for item in spec_items
             ]
             report = AssessmentReport(assessment_results=failed_results)
             report.statics[AssessmentStatus.FAIL] = len(spec_items)
             return report
+
 
 
         print(f"开始执行评估任务，并发 worker 数量: {self.max_workers}")
@@ -215,63 +203,84 @@ class AssessmentEngine:
     def _parse_worker_result(self, worker_result_dict: Dict[str, Any]) -> AssessmentResult:
         """
         将 AssessmentWorker 返回的字典结果转换为 AssessmentResult Pydantic 模型。
+        此版本修正了对 evidence 列表的处理。
         """
         try:
-            # 从字典中提取并构建 Conclusion 对象
+            # 1. 直接获取顶层的 evidence 列表
+            # 假设 worker_result_dict["evidence"] 已经是 List[EvidenceSearchResult]
+            # 或者在出错时是 List[Dict] (例如，如果LLM返回了原始字典而不是对象)
+            evidence_from_worker = worker_result_dict.get("evidence", [])
+
+            parsed_evidence_list: List[EvidenceSearchResult] = []
+            if isinstance(evidence_from_worker, list):
+                for item in evidence_from_worker:
+                    if isinstance(item, EvidenceSearchResult): # 如果已经是 EvidenceSearchResult 对象
+                        parsed_evidence_list.append(item)
+                    elif isinstance(item, dict): # 如果是字典，尝试实例化（作为一种兼容或错误恢复）
+                        try:
+                            # 确保这里的 EvidenceSearchResult 模型定义与 LLMClient 中的一致
+                            # 特别是如果它包含如 'tags' 等额外字段
+                            parsed_evidence_list.append(EvidenceSearchResult(**item))
+                        except Exception as e_instantiate:
+                            print(f"警告: 无法将字典实例化为 EvidenceSearchResult: {item}, 错误: {e_instantiate}")
+                    else:
+                        print(f"警告: 'evidence' 列表中包含意外类型: {type(item)}")
+            else:
+                print(f"警告: worker_result_dict 中的 'evidence' 不是列表，实际类型: {type(evidence_from_worker)}")
+
+            # 2. 解析 conclusion 字典中的 judgement 和 comment
             conclusion_data = worker_result_dict.get("conclusion", {})
-            # 安全地解析 judgement，如果失败则使用默认值或标记错误
-            print(worker_result_dict)
+            judgement_str = conclusion_data.get("judgement", Judgement.NOT_PROCESSED.value).strip().lower()
             try:
-                 judgement = Judgement(conclusion_data.get("judgement", "未处理").lower())
+                judgement = Judgement(judgement_str)
             except ValueError:
-                 judgement = Judgement.NOT_PROCESSED # 或者标记为错误状态
-                 print(f"警告: 规范 {worker_result_dict.get('spec_id', '未知')} LLM 返回了无效的 judgement: {conclusion_data.get('judgement', 'N/A')}")
+                print(f"警告: 规范 {worker_result_dict.get('spec_id', '未知')} LLM 返回了无效的 judgement: '{judgement_str}'。将设为 ERROR。")
+                judgement = Judgement.ERROR
 
+            comment = conclusion_data.get("comment", "")
 
-            conclusion = Conclusion(
+            # 3. 构建 Conclusion 对象，并传入已解析的证据列表
+            conclusion_obj = Conclusion(
                 judgement=judgement,
-                comment=conclusion_data.get("comment", "")
+                comment=comment,
+                evidence=parsed_evidence_list  # <--- 关键修正：将解析后的证据列表传递给 Conclusion 对象
             )
 
-            # 从字典中提取并构建 EvidenceSearchResult 列表
-            evidence_list_data = worker_result_dict.get("evidence", [])
-            evidence_results = [EvidenceSearchResult(**ed) for ed in evidence_list_data if isinstance(ed, dict)]
-
-
-            # 从字典中提取状态，如果不是有效状态则标记为失败
+            # 4. 解析状态和错误信息
             status_str = worker_result_dict.get("status", "fail").lower()
             try:
                 status = AssessmentStatus(status_str)
-                # 如果 status 是 success 但 judgement 是 NOT_PROCESSED，可能需要调整状态
-                if status == AssessmentStatus.SUCCESS and conclusion.judgement == Judgement.NOT_PROCESSED:
-                     status = AssessmentStatus.FAIL # 或者其他合适的错误状态
-                     error_message = worker_result_dict.get("conclusion", {}).get("comment", "LLM未能返回有效结论") # 使用评论作为错误信息
-                else:
-                     error_message = worker_result_dict.get("error_message") # 从 worker 结果中获取错误信息
+                error_message = worker_result_dict.get("error_message")
+                # 如果worker成功，但LLM未能返回有效结论或有效证据索引，可能需要调整最终状态
+                if status == AssessmentStatus.SUCCESS:
+                    if conclusion_obj.judgement == Judgement.NOT_PROCESSED or conclusion_obj.judgement == Judgement.ERROR:
+                        # status = AssessmentStatus.FAIL # 或者保持 SUCCESS 但依赖 comment
+                        if not error_message: # 如果没有更具体的错误信息
+                            error_message = conclusion_obj.comment # 使用 conclusion 的 comment 作为错误提示
             except ValueError:
                 status = AssessmentStatus.FAIL
                 error_message = f"AssessmentWorker 返回了无效的状态: {status_str}"
 
-
-            # 构建 AssessmentResult 对象
+            # 5. 构建并返回 AssessmentResult 对象
             return AssessmentResult(
-                spec_id=worker_result_dict.get("spec_id", "未知"),
+                spec_id=worker_result_dict.get("spec_id", "未知ID"),
                 spec_content=worker_result_dict.get("spec_content", "未知内容"),
-                evidence=evidence_results,
-                conclusion=conclusion,
+                evidence=parsed_evidence_list,  # <--- 关键修正：顶层 AssessmentResult.evidence 也使用解析后的列表
+                conclusion=conclusion_obj,
                 status=status,
                 error_message=error_message
             )
         except Exception as e:
-            print(f"解析 AssessmentWorker 结果时发生错误: {worker_result_dict}. 错误: {e}")
-            # 创建一个表示解析失败的 AssessmentResult
+            print(f"解析 AssessmentWorker 结果时发生严重错误: {worker_result_dict}. 错误: {e}")
+            # 返回一个表示解析失败的 AssessmentResult
             return AssessmentResult(
                 spec_id=worker_result_dict.get("spec_id", "解析错误"),
-                spec_content=worker_result_dict.get("spec_content", "解析错误"),
+                spec_content=worker_result_dict.get("spec_content", "内容解析错误"),
                 status=AssessmentStatus.FAIL,
-                error_message=f"解析 worker 结果失败: {str(e)}"
+                evidence=[], # 确保 evidence 是列表
+                conclusion=Conclusion(judgement=Judgement.ERROR, comment=f"引擎解析worker结果失败: {str(e)}", evidence=[]),
+                error_message=f"引擎解析worker结果失败: {str(e)}"
             )
-
 
     def generate_report(self) -> AssessmentReport:
         """

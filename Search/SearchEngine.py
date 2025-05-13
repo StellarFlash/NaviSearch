@@ -1,5 +1,4 @@
 from typing import List, Dict, Optional
-import ast
 from collections import Counter
 from pymilvus import MilvusClient, Collection
 from utils import get_embedding

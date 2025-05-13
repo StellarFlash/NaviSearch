@@ -15,11 +15,11 @@ class AssessmentWorker:
         self.llm_client = llm_client
         self.timeout_seconds = timeout_seconds
 
-    def _get_relevant_evidences(self, spec_item: AssessmentSpecItem):
-        search_params = self.llm_client.generate_search_params(spec_item)
-        evidences_found = self.navisearch_client.search_evidence(search_params)
-        # This will call the /search endpoint of VisitorFastAPI
-        return evidences_found
+    # def _get_relevant_evidences(self, spec_item: AssessmentSpecItem):
+    #     search_params = self.llm_client.generate_search_params(spec_item)
+    #     evidences_found = self.navisearch_client.search_evidence(search_params)
+    #     # This will call the /search endpoint of VisitorFastAPI
+    #     return evidences_found
 
     def process_task(self, spec_item) -> dict:
         start_time = time.time()
@@ -27,7 +27,7 @@ class AssessmentWorker:
             # 1. Search for evidence
             # Using a simple timeout mechanism for the whole process_task
             # More granular timeouts for search and LLM calls might be needed in practice.
-            evidences_found = self._get_relevant_evidences(spec_item)
+            evidences_found = self.navisearch_client.search_evidence(spec_item)
             if time.time() - start_time > self.timeout_seconds:
                 raise FuturesTimeoutError("Evidence search and processing timed out")
 

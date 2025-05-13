@@ -1,7 +1,7 @@
 """
 Visitor.py
 
-核心模块，负责调度SemanticTagger，SearchOperator等组件。
+核心模块，负责调度SearchOperator等组件。
 
 重构记录：
 - 2025-04-29: 初始创建，实现基本的搜索功能。
@@ -20,7 +20,6 @@ import json
 from typing import List, Dict, Optional, Any
 from pymilvus import MilvusClient, FieldSchema, CollectionSchema, Collection, DataType, Connections
 from Search.SearchEngine import SearchEngine # 假设 SearchEngine 存在且路径正确
-from Tagger.SemanticTagger import SemanticTagger # 假设 SemanticTagger 存在且路径正确
 from utils import get_embedding, get_response, get_filter, flatten_nested_structure # 假设 utils 中的函数存在且路径正确
 
 
@@ -30,7 +29,6 @@ from utils import get_embedding, get_response, get_filter, flatten_nested_struct
 
 # Assume these are defined correctly
 # from Search.SearchEngine import SearchEngine
-# from Tagger.SemanticTagger import SemanticTagger
 # from utils import get_embedding, get_response, get_filter, flatten_nested_structure
 
 DEFAULT_COLLECTION_NAME = "navi_search_collection"
