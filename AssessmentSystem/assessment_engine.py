@@ -220,6 +220,7 @@ class AssessmentEngine:
             # 从字典中提取并构建 Conclusion 对象
             conclusion_data = worker_result_dict.get("conclusion", {})
             # 安全地解析 judgement，如果失败则使用默认值或标记错误
+            print(worker_result_dict)
             try:
                  judgement = Judgement(conclusion_data.get("judgement", "未处理").lower())
             except ValueError:

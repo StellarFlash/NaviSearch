@@ -143,7 +143,6 @@ def process_markdown_images(md_converter: MarkItDown, markdown_str: str, base_di
              # 返回原始匹配内容，跳过此图片处理
              return full_match
 
-
         try:
             # 调用转换器获取描述 (using the constructed media_path)
             # 在这里使用 strict=True 尝试打开文件，如果文件不存在会抛出 FileNotFoundError
@@ -161,7 +160,7 @@ def process_markdown_images(md_converter: MarkItDown, markdown_str: str, base_di
             return f"{full_match}\n{description}"
 
         except FileNotFoundError:
-             print(f"警告: 图片文件未找到，跳过处理: {media_media_path}. 请检查文件是否存在。")
+             print(f"警告: 图片文件未找到，跳过处理: {media_path}. 请检查文件是否存在。")
              return full_match # 出错时返回原内容
         except Exception as e:
             print(f"处理图片 {media_path} 时出错: {str(e)}")

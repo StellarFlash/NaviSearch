@@ -66,6 +66,7 @@ class Conclusion(BaseModel):
     """评估结论数据结构"""
     judgement: Judgement = Judgement.NOT_PROCESSED  # 判定结果，默认'未处理'
     comment: str = ""                              # 说明注释，默认为空
+    evidence: List = None     # 使用的证据列表，默认为空列表
 
 class AssessmentResult(BaseModel):
     """单项评估结果数据结构"""

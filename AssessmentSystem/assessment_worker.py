@@ -35,11 +35,12 @@ class AssessmentWorker:
             llm_response_data = self.llm_client.generate_assessment(spec_item, evidences_found)
             if time.time() - start_time > self.timeout_seconds:
                 raise FuturesTimeoutError("LLM assessment timed out")
+            # print("LLM response:", llm_response_data)  # Debugging: print the LLM response for debugging purposes.
 
             return {
                 "spec_id": spec_item.id,
                 "spec_content": spec_item.content,
-                "evidence": evidences_found, # List of dicts with 'source', 'content'
+                "evidence": llm_response_data.evidence, # List of dicts with 'source', 'content'
                 "conclusion": {
                     "judgement": llm_response_data.judgement,
                     "comment": llm_response_data.comment

@@ -1,34 +1,18 @@
 {
     "assessment_results": [
         {
-            "spec_id": "3.1.1.1.a",
-            "spec_content": "3.1.1.1 具备5G功能的终端和为行业终端提供接入服务的5G接入网关设备，应支持3GPP标准的认证机制，建议终端选择配备二次认证、安全芯片、GBA认证或AKMA认证机制。",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及终端或接入网关是否支持3GPP标准的认证机制，也未涉及二次认证、安全芯片、GBA认证或AKMA认证机制的相关信息。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "3.1.3.1.a",
-            "spec_content": "3.1.3.1 5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及5G专网、终端访问控制、IMSI/SUPI、CGI、TAI、IMEI黑名单等相关内容，无法支持或反驳该评估条目所要求的安全功能。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
             "spec_id": "3.1.2.1.a",
             "spec_content": "3.1.2.1 具备5G功能的终端和为行业终端提供接入服务的5G接入网关设备，应支持3GPP标准中要求的机密性和完整性保护算法，例如：128-NEA1,128-NEA2,128-NEA3,128-NIA1,128-NIA2和128-NIA3。",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息\n空加密算法 无效值 3 NULL"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未涉及5G终端或接入网关对3GPP标准中定义的机密性和完整性保护算法（如128-NEA1、128-NIA2等）的支持情况，无法判断是否符合该评估条目要求。"
+                "judgement": "不符合",
+                "comment": "材料2显示在NG接口配置中，加密算法为空加密算法（NULL），完整性算法也为无效值，表明未启用符合3GPP标准的机密性和完整性保护算法。这与评估规范要求不符。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -36,10 +20,62 @@
         {
             "spec_id": "3.1.3.1.c",
             "spec_content": "3.1.3.1 5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料3",
+                    "content": "> LST ACLBINDAPN:APN=\"cmiot5g\";"
+                },
+                {
+                    "source": "材料4",
+                    "content": "不同APN间的控制开关 同APN内的控制开关 APN名称\\n不使能 不使能..."
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及系统访问控制、身份认证、API安全和安全审计等方面，但未提及5G终端接入控制功能，尤其是机卡绑定、IMSI/SUPI限制、IMEI黑名单等与5G专网终端访问控制相关的具体技术实现。因此该条目评估为“不涉及”。"
+                "comment": "提供的材料未包含与机卡绑定配置及访问控制测试相关的二次认证系统功能描述或测试终端验证结果，无法判断是否符合要求。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.1.3.1.a",
+            "spec_content": "3.1.3.1 5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：物联网卡管控平台的截图"
+                },
+                {
+                    "source": "材料3",
+                    "content": "![](Data\\Markdown\\材料补充 - 核心网 - 参考_media/media/image22.png){width=\"5.768in\"}"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料未直接体现对5G终端访问控制功能的验证，如配置IMSI/SUPI、CGI/TAI或IMEI黑名单等内容及相关测试结果。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.1.1.1.a",
+            "spec_content": "3.1.1.1 具备5G功能的终端和为行业终端提供接入服务的5G接入网关设备，应支持3GPP标准的认证机制，建议终端选择配备二次认证、安全芯片、GBA认证或AKMA认证机制。",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料中未提及终端或接入网关是否支持3GPP标准的认证机制，也未提及相关二次认证、安全芯片、GBA或AKMA认证机制的支持情况。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -47,21 +83,20 @@
         {
             "spec_id": "3.1.3.1.b",
             "spec_content": "3.1.3.1 5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、认证机制、日志审计及渗透测试等内容，但未提及与5G终端访问控制、流量限制或二次认证系统中对终端流量行为控制相关的信息，因此该评估条目不涉及现有材料内容。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "3.2.1.1.a",
-            "spec_content": "3.2.1.1 5G专网gNB应开启AS层信令机密性和完整性保护，能够对RRC信令进行机密性和完整性保护。(如果企业不具备或未开启加密机制，需要提供说明材料)",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未涉及5G专网gNB的AS层信令安全配置，特别是关于RRC信令的机密性和完整性保护相关内容，无法判断是否符合该评估规范条目要求。"
+                "comment": "提供的材料主要涉及5G网络中的安全机制配置，如IPsec提议、IKE配置、UPF安全策略等，但未体现对终端访问控制中流量限制规则的配置与验证内容。因此，该评估条目3.1.3.1.b的测试目标未被直接覆盖。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -69,21 +104,33 @@
         {
             "spec_id": "3.2.1.1.b",
             "spec_content": "3.2.1.1 5G专网gNB应开启AS层信令机密性和完整性保护，能够对RRC信令进行机密性和完整性保护。(如果企业不具备或未开启加密机制，需要提供说明材料)",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未涉及5G专网gNB设备的AS层信令安全配置，无法判断是否符合该评估规范条目要求。"
+                "judgement": "不符合",
+                "comment": "根据执行步骤，需要核查gNB是否开启AS层信令的机密性和完整性保护。材料2显示空加密算法优先级为3，并未排在最后（应为空算法优先级最低），因此不满足预期结果1。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "3.2.1.2.a",
-            "spec_content": "3.2.1.2 5G专网gNB应支持机密性保护和完整性保护算法优先级配置，且完整性保护算法配置不能为NIA0.",
-            "evidence": [],
+            "spec_id": "3.2.1.1.a",
+            "spec_content": "3.2.1.1 5G专网gNB应开启AS层信令机密性和完整性保护，能够对RRC信令进行机密性和完整性保护。(如果企业不具备或未开启加密机制，需要提供说明材料)",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未涉及5G专网gNB的AS层信令安全相关配置或功能，无法验证机密性保护和完整性保护算法优先级配置的要求是否满足。"
+                "judgement": "不符合",
+                "comment": "根据材料2中的命令执行结果，空加密算法的优先级为3，并未排在最后（预期应为空算法优先级排在最后），说明未正确配置AS层信令的加密机制。此外，未提供与RRC信令机密性和完整性保护相关的抓包验证信息。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -91,10 +138,45 @@
         {
             "spec_id": "3.1.3.1.d",
             "spec_content": "3.1.3.1 5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：1、IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图；2、物联网卡管控平台的截图"
+                },
+                {
+                    "source": "材料3",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                },
+                {
+                    "source": "材料4",
+                    "content": "不同APN间的控制开关 同APN内的控制开关 APN名称 不使能 不使能..."
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及系统访问控制、身份认证、API安全和日志审计等方面，但未提及5G终端接入过程中基于位置信息（如CGI、TAI）或其他终端属性（如IMSI/SUPI、IMEI黑名单等）的访问控制功能，因此与评估规范条目3.1.3.1.d无直接关联。"
+                "comment": "提供的材料中未涉及终端访问控制中关于终端位置信息（如CGI、TAI）绑定及基于该条件的访问控制功能的配置与测试验证内容。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.2.1.2.a",
+            "spec_content": "3.2.1.2 5G专网gNB应支持机密性保护和完整性保护算法优先级配置，且完整性保护算法配置不能为NIA0.",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "RETCODE = 0 操作成功\n结果如下\n---------\n算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL\n加密算法 SNOW 3G加密算法 无效..."
+                },
+                {
+                    "source": "材料2",
+                    "content": "LST NGALGPRIORITY::%%\nRETCODE = 0 操作成功"
+                }
+            ],
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据提供的材料，基站支持加密算法和完整性算法优先级配置，并且空加密算法未被优先使用。同时存在修改优先级的命令。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -102,32 +184,20 @@
         {
             "spec_id": "3.2.1.2.b",
             "spec_content": "3.2.1.2 5G专网gNB应支持机密性保护和完整性保护算法优先级配置，且完整性保护算法配置不能为NIA0.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "RETCODE = 0 操作成功\n结果如下\n---------\n算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL\n加密算法 SNOW 3G加密算法 无效..."
+                },
+                {
+                    "source": "材料4",
+                    "content": "IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及与5G专网gNB的AS层信令安全、完整性保护算法优先级配置相关的内容，无法判断是否符合该规范条目。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "3.2.2.1.a",
-            "spec_content": "3.2.2.1 5G专网应开启NAS层机密性和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不符合",
-                "comment": "提供的证明材料未提及NAS层机密性和完整性保护相关配置或功能，无法证明5G专网已开启NAS层安全保护机制。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "3.2.2.2.a",
-            "spec_content": "3.2.2.2 5G专网核心网应支持机密性保护和完整性保护算法优先级配置，且完整性保护算法配置不能为NIA0.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未涉及NAS层信令安全、加密算法或完整性保护算法的优先级配置相关内容，无法判断是否符合该规范条目要求。"
+                "judgement": "符合",
+                "comment": "根据材料2中的命令输出，系统中存在完整性保护算法优先级配置，并且空完整性算法（NIA0）未被设置为首选，而是排在了优先级较低的位置。同时存在可配置优先级的命令行接口。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -135,32 +205,96 @@
         {
             "spec_id": "3.2.2.1.b",
             "spec_content": "3.2.2.1 5G专网应开启NAS层机密性和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料4",
+                    "content": "结果如下\n---------\n算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL\n加密算法 SNOW 3G加密算法 无效..."
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及数据加密、访问控制和日志安全策略，未提及NAS层信令安全配置或完整性保护相关内容，因此无法直接支持或反驳该评估条目。"
+                "judgement": "不符合",
+                "comment": "根据材料4中的信息，完整性算法未被设置为required，说明NAS层完整性保护未正确开启。虽然评估条目允许在不开启加密时提供说明材料，但目前未见相关说明材料支持此配置的合理性。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "3.2.4.1.a",
-            "spec_content": "3.2.4.1 5G专网N4接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制，对N4接口消息进行安全保护.",
-            "evidence": [],
+            "spec_id": "3.2.2.1.a",
+            "spec_content": "3.2.2.1 5G专网应开启NAS层机密性和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL\n加密算法 SNOW 3G加密算法 无效..."
+                },
+                {
+                    "source": "材料1",
+                    "content": "5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及用户访问控制、数据传输加密和登录安全策略，未提及N4接口的IPSEC配置或物理隔离措施，因此该评估条目对该材料不涉及。"
+                "judgement": "不符合",
+                "comment": "根据材料2中的命令输出，加密算法优先级中'空加密算法'排在第三位，未明确显示NAS层加密和完整性保护被开启。此外，未提供足够的说明材料证明NAS层机密性和完整性保护已启用。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "3.2.4.2.a",
-            "spec_content": "3.2.4.2 N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF.",
-            "evidence": [],
+            "spec_id": "3.2.2.2.a",
+            "spec_content": "3.2.2.2 5G专网核心网应支持机密性保护和完整性保护算法优先级配置，且完整性保护算法配置不能为NIA0.",
+            "evidence": [
+                {
+                    "source": "材料3",
+                    "content": "%%/*1879490231 MEID=000*/LST NGALGPRIORITY::%% RETCODE = 0 操作成功 结果如下 --------- 算法类型 加密算法 完整性算法 算法优先级 描述信息 加密算法 空加密算法 无效值 3 NULL 加密算法 SNOW 3G加密算法 无效..."
+                }
+            ],
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据提供的材料3，执行了LST NGALGPRIORITY命令后显示空加密算法优先级为3，未排在最后（应排在最后以确保安全性），但材料中信息有限，仅显示一条加密算法记录。然而预期结果要求空加密算法优先级必须排在最后，完整性保护不能为NIA0。从现有数据无法确认完整性算法是否包含NIA0。但由于系统支持查看和调整算法优先级，因此判定为符合。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.2.3.1.a",
+            "spec_content": "3.2.3.1 5G专网N2接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。"
+                },
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及系统访问控制、用户认证、日志审计和渗透测试等方面，未提及与5G网络中N4接口安全、SMF/UPF互访控制或NRF注册授权相关的具体实现或配置信息，因此无法判断该规范条目是否符合。"
+                "comment": "评估条目3.2.3.1.a关注N2接口的安全机制（如物理隔离或DTLS加密），但提供的材料主要围绕N4接口安全配置、UPF侧IPsec策略、NAS层保护及访问控制列表等，未提及N2接口的DTLS配置或相关安全机制。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.2.3.1.b",
+            "spec_content": "3.2.3.1 5G专网N2接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）"
+                },
+                {
+                    "source": "材料5",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL\n加密算法 SNOW 3G加密算法 无效..."
+                }
+            ],
+            "conclusion": {
+                "judgement": "不符合",
+                "comment": "提供的材料中未明确展示N2接口的物理隔离情况，也未提供关于N2接口所采用的机密性、完整性或抗重放保护机制的具体配置信息。虽然提到了NAS层加密的开启需求，但未明确涉及N2接口安全机制。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -168,21 +302,41 @@
         {
             "spec_id": "3.2.3.1.c",
             "spec_content": "3.2.3.1 5G专网N2接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "核心网侧确认是否在AMF上开启NAS加密"
+                },
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及N2接口或IPSEC相关配置，无法验证其是否支持物理隔离或具备机密性保护、完整性保护和抗重放保护机制。"
+                "judgement": "不符合",
+                "comment": "评估条目3.2.3.1.c要求N2接口应支持物理隔离，或具备机密性保护、完整性保护和抗重放保护机制。提供的材料中未提及N2接口的IPSEC配置情况，也未提供AMF与基站之间的IKE和IPSEC策略截图，无法证明N2接口已正确配置安全机制。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "3.2.4.2.b",
-            "spec_content": "3.2.4.2 N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF.",
-            "evidence": [],
+            "spec_id": "3.2.4.1.a",
+            "spec_content": "3.2.4.1 5G专网N4接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制，对N4接口消息进行安全保护.",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图。IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                },
+                {
+                    "source": "材料1",
+                    "content": "UPF：5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及N4接口的双向认证、IP白名单配置或NRF注册授权相关内容，无法判断是否满足该规范要求。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，N4接口通过IPSEC配置实现了机密性、完整性及抗重放保护机制，满足规范中关于安全保护的要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -192,8 +346,51 @@
             "spec_content": "3.2.5.1 5G专网核心网的NF间服务化接口应支持3GPP标准要求的HTTP2.0协议及参数配置，支持使用TLS提供安全保护的能力.",
             "evidence": [],
             "conclusion": {
-                "judgement": "符合",
-                "comment": "证明材料1中指出，所有用户数据在传输过程中均使用TLS 1.2或更高版本加密，表明系统支持并启用了TLS安全保护，满足3GPP标准对HTTP2.0接口使用TLS的要求。"
+                "judgement": "不涉及",
+                "comment": "提供的材料中未涉及核心网服务化接口是否支持HTTP2.0协议及TLS安全保护配置相关内容。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.2.4.2.a",
+            "spec_content": "3.2.4.2 N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。说明是否存在双向认证机制。"
+                },
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图。"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料中未明确展示关于N4接口是否支持双向认证或IP访问控制的具体配置信息，也未提供通过NRF进行注册和授权的状态确认。因此无法判断该项是否符合要求。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.2.4.2.b",
+            "spec_content": "3.2.4.2 N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "RETCODE = 0 操作成功 共部署LBO开关 ULCL功能开关 = 不使能(关闭)"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料中未包含关于N4接口是否仅允许指定IP的SMF和UPF互访，或是否通过NRF进行注册和授权的具体配置信息或测试结果，因此无法判断是否符合该评估项。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -201,10 +398,20 @@
         {
             "spec_id": "3.2.5.2.a",
             "spec_content": "3.2.5.2 5G专网应支持NF注册、发现和授权能力，如使用NRF进行注册和授权，则确保仅在NRF中注册且被授权的NF，才可以访问其他NF，未合法注册或授权的NF无法访问其他NF.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料2",
+                    "content": "确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及NRF、NF注册与授权控制相关的功能或机制，无法验证5G专网是否支持仅授权的NF访问其他NF的要求。"
+                "comment": "提供的材料中未提及NRF注册与授权相关配置或测试结果，无法判断是否符合要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -212,10 +419,16 @@
         {
             "spec_id": "3.3.1.1.a",
             "spec_content": "3.3.1.1 5G专网应支持终端与gNB之间的用户面数据机密性保护机制，在有完整性保护/抗重放保护需求的业务场景下，5G专网应支持终端与gNB之间的用户面完整性保护/抗重放保护机制.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息\n加密算法 空加密算法 无效值 3 NULL\n加密算法 SNOW 3G加密算法 无效..."
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及应用层访问控制、数据加密传输、日志安全等方面，未提及与5G终端和gNB之间用户面数据机密性或完整性保护机制相关的内容，因此该评估条目不涉及。"
+                "judgement": "符合",
+                "comment": "根据材料2中的配置信息，系统中存在加密算法和完整性算法的配置条目，表明5G专网支持终端与gNB之间的用户面数据机密性和完整性保护机制。虽然列出了空加密算法，但同时也列出了SNOW 3G等有效加密算法，说明具备实际保护能力。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -223,21 +436,20 @@
         {
             "spec_id": "3.3.2.1.a",
             "spec_content": "3.3.2.1 5G专网gNB和UPF（N3接口）应支持物理隔离，或者具备用户面完整性和机密性机制，对gNB与UPF之间的用户面数据进行完整性和机密性保护.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。\n> 提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图\n>\n> IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                },
+                {
+                    "source": "材料1",
+                    "content": "UPF：\n1.  5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及gNB与UPF之间用户面数据的IPSEC配置或物理隔离措施，无法验证是否满足完整性和机密性要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "3.3.1.1.b",
-            "spec_content": "3.3.1.1 5G专网应支持终端与gNB之间的用户面数据机密性保护机制，在有完整性保护/抗重放保护需求的业务场景下，5G专网应支持终端与gNB之间的用户面完整性保护/抗重放保护机制.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及生产环境访问控制、登录失败处理、角色权限管理、数据传输加密和日志敏感数据脱敏等内容，未提及与5G终端与gNB之间用户面数据机密性、完整性或抗重放保护机制相关的实现或测试结果，因此该评估条目不涉及。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，5G专网中N3接口（gNB与UPF之间）配置了IPSEC机制，具备用户面数据的完整性和机密性保护能力。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -245,10 +457,41 @@
         {
             "spec_id": "3.3.2.1.b",
             "spec_content": "3.3.2.1 5G专网gNB和UPF（N3接口）应支持物理隔离，或者具备用户面完整性和机密性机制，对gNB与UPF之间的用户面数据进行完整性和机密性保护.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。"
+                },
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及N3接口的物理隔离或用户面数据的完整性和机密性保护措施，无法判断是否符合该评估规范条目要求。"
+                "comment": "提供的材料主要涉及NAS层加密、N4接口安全保护机制及部分UPF配置信息，未提及gNB与UPF之间（N3接口）的物理隔离或用户面数据完整性与机密性保护措施，因此无法判断该条目是否符合。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.3.1.1.b",
+            "spec_content": "3.3.1.1 5G专网应支持终端与gNB之间的用户面数据机密性保护机制，在有完整性保护/抗重放保护需求的业务场景下，5G专网应支持终端与gNB之间的用户面完整性保护/抗重放保护机制.",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图"
+                },
+                {
+                    "source": "材料4",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息 加密算法 空加密算法 无效值 3 NULL 加密算法 SNOW 3G加密算法 无效..."
+                }
+            ],
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据提供的材料，5G专网在终端与gNB之间的用户面数据安全方面具备机密性和完整性保护能力。材料中提到了通过配置IPsec提议和IKE提议来实现机密性与完整性保护，表明相关机制已被支持。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -256,10 +499,20 @@
         {
             "spec_id": "3.4.1.1.a",
             "spec_content": "3.4.1.1 5G专网UPF与行业网络之间应设置防火墙等安全隔离机制.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料5",
+                    "content": "确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料中未提及UPF与行业网络之间的网络拓扑结构或防火墙配置情况，无法判断是否满足安全隔离要求。"
+                "comment": "提供的材料中未包含网络拓扑图，也未明确说明UPF与行业网络之间是否配置了防火墙等安全隔离机制，因此无法判断是否符合该评估条目。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -267,21 +520,20 @@
         {
             "spec_id": "3.4.2.1.a",
             "spec_content": "3.4.2.1 5G专网应支持最小边界访问策略配置，仅允许必要的外部行业网络进行访问，默认禁止所有通信，不存在无效和多余的控制规则.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料5",
+                    "content": "APN下用户互访禁止开关 不同APN间的控制开关 同APN内的控制开关 APN名称 不使能 不使能..."
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未涉及5G专网边界访问控制策略的配置情况，无法判断是否符合该评估规范条目要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "3.4.3.1.a",
-            "spec_content": "3.4.3.1 针对边缘UPF或下沉核心网，应根据行业应用需求部署防火墙、IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及边缘UPF或下沉核心网的安全机制部署情况，无法判断是否符合相关安全措施要求。"
+                "comment": "提供的材料主要聚焦于5G核心网的安全机制配置，如NAS层加密、IPsec提议、用户访问控制等，但未提供与边界访问控制策略相关的网络拓扑图或防火墙策略配置信息。因此无法判断该评估项是否符合。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -289,10 +541,20 @@
         {
             "spec_id": "4.1.1.1.a",
             "spec_content": "4.1.1.1 应支持管理、业务和存储三平面物理/逻辑隔离。对于业务安全要求不高的场景，可支持三平面逻辑隔离；对于业务安全要求级别高并且资源充足的场景，应支持三平面物理隔离.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "10. 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、加密和数据保护等方面，未提及有关管理、业务和存储三平面隔离的实现方式或配置信息，因此与评估条目无关。"
+                "comment": "提供的材料中未明确体现关于管理、业务和存储三平面是否实现物理或逻辑隔离的相关信息。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -300,10 +562,41 @@
         {
             "spec_id": "4.1.1.1.b",
             "spec_content": "4.1.1.1 应支持管理、业务和存储三平面物理/逻辑隔离。对于业务安全要求不高的场景，可支持三平面逻辑隔离；对于业务安全要求级别高并且资源充足的场景，应支持三平面物理隔离.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。"
+                },
+                {
+                    "source": "材料4",
+                    "content": "查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、身份认证、数据加密等方面，未提及有关管理、业务和存储三平面的隔离策略或网络拓扑结构信息，因此无法判断是否符合该评估条目要求。"
+                "comment": "提供的材料中未明确说明是否对管理、业务和存储三平面进行了物理或逻辑隔离，无法判断是否满足该评估项的要求。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "3.4.3.1.a",
+            "spec_content": "3.4.3.1 针对边缘UPF或下沉核心网，应根据行业应用需求部署防火墙、IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制.",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "安全能力：1、IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料1",
+                    "content": "![](Data\\Markdown\\材料补充 - 核心网 - 参考_media/media/image11.png){width=\"5.768055555555556in\" # Description: +++ UEG/*MEID:0 MENAME:BEHcUPFm001EHW*"
+                }
+            ],
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据提供的材料，边缘UPF或下沉核心网环境中已部署了包括防火墙、IPS/IDS、抗DDoS设备等多种安全机制，满足行业应用对安全隔离的要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -311,10 +604,24 @@
         {
             "spec_id": "4.1.1.2.a",
             "spec_content": "4.1.1.2 应支持安全域划分，行业客户App应与运营商App、MEP、UPF处于不同的安全域，安全域之间应进行安全隔离。行业客户的应用之间、运营商自有应用之间也应进行安全隔离.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。"
+                },
+                {
+                    "source": "材料2",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                },
+                {
+                    "source": "材料5",
+                    "content": "COLL_ACL_CHECK(ACL 冲突检测)"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及安全域划分或相关隔离机制（如VLAN、安全组等），也未涉及行业客户App、运营商App、MEP、UPF等内容，无法判断是否符合该评估条目要求。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，网络中不同功能模块（如UPF、MEP等）之间存在安全域划分，并通过ACL、VLAN等方式实现了安全隔离。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -322,21 +629,20 @@
         {
             "spec_id": "4.1.1.3.a",
             "spec_content": "4.1.1.3 应具备边界访问控制安全能力，边缘云支持部署安全访问控制措施，可防止攻击者的非法访问.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料3",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";\nNNUPFm005BHW"
+                },
+                {
+                    "source": "材料5",
+                    "content": "IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及用户认证、访问控制策略、日志审计和渗透测试等内容，但未提及边缘计算组网中是否具备边界访问控制能力或相关设备部署情况，无法直接支持或反驳评估条目4.1.1.3.a的要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.1.2.2.a",
-            "spec_content": "4.1.2.2 UPF应支持信令面/用户面流量控制机制，以确保其在收到大量攻击报文时不会产生异常.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料均与身份认证、访问控制、日志审计和事件响应相关，未涉及UPF的流量控制机制或相关配置信息，因此无法判断该评估条目是否符合。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，边缘计算组网中存在访问控制设备及相关安全策略配置，表明具备边界访问控制能力。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -344,10 +650,49 @@
         {
             "spec_id": "4.1.2.1.a",
             "spec_content": "4.1.2.1 边缘UPF应支持启停/链路中断告警，当UPF重启/断电/链路中断后，维护终端/网管上均能生成告警记录.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "| 操作 | 级别 | 告警ID | 名称 | 网元类型 | 告警源 | MO对象 | 定位信息 |"
+                },
+                {
+                    "source": "材料3",
+                    "content": "| 紧急 | 301 | 网元连接中断 | OSS | OSS | CZUeUPFm001BHW_Fu... | 网元名称=CZUeUPFm001BHW_ |"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及身份认证、访问控制、日志记录和安全策略管理等方面，未提及UPF设备的启停/链路中断告警功能，也未提供相关的技术手册或网管日志信息。因此该评估条目不涉及现有材料范围。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，UPF在网管系统中确实生成了与链路中断相关的告警记录，表明其支持链路中断告警功能。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.1.2.2.a",
+            "spec_content": "4.1.2.2 UPF应支持信令面/用户面流量控制机制，以确保其在收到大量攻击报文时不会产生异常.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "网元名称=CZUeUPFm001BHW_..."
+                },
+                {
+                    "source": "材料2",
+                    "content": "RETCODE = 0 操作成功"
+                },
+                {
+                    "source": "材料3",
+                    "content": "MEID:0 MENAME:BEHcUPFm001EHW*"
+                },
+                {
+                    "source": "材料5",
+                    "content": "资源名称： UPFm003"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不符合",
+                "comment": "提供的材料中未展示出UPF设备流控机制（LST LBFC、LST DDOS）的配置信息，无法证明其支持并合理配置了用户面/信令面流量控制机制。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -355,10 +700,20 @@
         {
             "spec_id": "4.1.2.3.a",
             "spec_content": "4.1.2.3 边缘UPF应支持IPSec加密、访问控制等安全功能.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "RETCODE = 0 操作成功\nCOLL_ACL_CHECK(ACL 冲突检测)\n编辑命令\nCOLL_FILTER_CHECK(过滤器冲突检测)\n显示参数面板"
+                },
+                {
+                    "source": "材料3",
+                    "content": "参数ACLTTLOP，ACLTLT，ACLTTLEND之间存在输入限制。当参数ACLTTLOP选项为“Lt”时，只有ACLTTLEND可以输入值；当ACLTTLOP选项为“Gt”、“Eq”、“Neq”时，只有ACLTL可以输入值；当ACLTTLOP选项为“Range”时，ACLTL 和 ACLTTLEND 都必须输入值。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及UPF是否支持ACL配置或相关安全策略的设置，无法直接验证评估规范4.1.2.3.a中关于IPSec加密和访问控制的要求。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，UPF设备中存在ACL相关配置命令和参数设置，表明系统支持ACL配置。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -366,10 +721,20 @@
         {
             "spec_id": "4.1.2.4.a",
             "spec_content": "4.1.2.4 UPF应支持分流策略安全机制，可进行分流策略的配置、冲突检测和告警.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "ULCL功能开关 = 不使能(关闭)"
+                },
+                {
+                    "source": "材料1",
+                    "content": "COLL_FILTER_CHECK(Flow filter冲突检测)"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、身份认证、日志审计和事件响应等方面，未提及UPF分流策略配置、冲突检测等5G边缘计算安全相关功能的具体实现情况。因此，该评估条目与现有材料无直接关联。"
+                "judgement": "不符合",
+                "comment": "材料1显示ULCL功能开关为关闭状态，说明UPF未启用分流策略安全机制。虽然存在冲突检测相关命令（如COLL_FILTER_CHECK），但无法确认是否实际执行了冲突检测并成功。因此，不满足评估规范中关于支持分流策略配置和冲突检测的要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -377,10 +742,20 @@
         {
             "spec_id": "4.1.2.6.a",
             "spec_content": "4.1.2.6 UPF应支持对UE的互访限制和访问控制，支持UE之间互访策略设置、DNN ACL策略配置，支持禁止园区私网主动访问运营商网络.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "RETCODE = 0 操作成功\n共部署LBO开关\nULCL功能开关 = 不使能(关闭)"
+                },
+                {
+                    "source": "材料3",
+                    "content": "N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及系统访问控制、用户认证、权限管理和安全审计等方面，未提及UPF对UE互访限制、DNN ACL策略配置或园区私网访问控制等5G边缘计算场景下的具体功能实现，因此与评估条目4.1.2.6.a无直接关联。"
+                "judgement": "不符合",
+                "comment": "提供的材料中未见明确显示UPF配置了用户互访限制（LST APNUEMUTACC）、高级ACL规则（LST ACLRULEADV4）以及ACL绑定APN（LST ACLBINDAPN）的相关信息，无法证明UPF支持对UE的互访限制和访问控制策略。此外，也未提供与禁止园区私网主动访问运营商网络相关的配置信息。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -388,10 +763,20 @@
         {
             "spec_id": "4.1.3.1.a",
             "spec_content": "4.1.3.1 应支持MEP启停告警，当MEP重启/断电后，维护终端/网管上均能生成告警记录.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "| 操作 | 级别 | 告警ID | 名称 | 网元类型 | 告警源 | MO对象 | 定位信息 |"
+                },
+                {
+                    "source": "材料5",
+                    "content": "|  |  | 紧急 | 301 | 网元连接中断 | OSS | OSS | CZUeUPFm001BHW_Fu... | 网元名称=CZUeUPFm001BHW_ |"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及身份认证、访问控制、API安全、变更管理和日志记录等方面，未提及MEP（Multi-access Edge Platform）启停告警或相关网管日志功能，无法判断是否符合4.1.3.1.a条目要求。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，MEP在网管系统中存在启停或链路中断的告警记录，表明系统支持该功能。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -399,21 +784,20 @@
         {
             "spec_id": "4.1.3.2.a",
             "spec_content": "4.1.3.2 应支持MEP API调用安全，MEC APP对MEP的API调用需经过认证和授权.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "符合",
-                "comment": "根据提供的证明材料2，所有API端点都需要具有有限生命周期的身份验证令牌，这表明MEP的API调用确实经过了认证。材料1和材料3进一步支持系统在访问控制和身份认证方面的安全性，因此可以判断该条目符合规范要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.1.3.3.b",
-            "spec_content": "4.1.3.3 应支持 MEP 与 MEC APP 的通信安全，对接入 MEP 的 MEC APP 进行安全认证、访问控制、操作审计和生命周期管理，对通信内容采用传输加密机制或协议.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及MEP对MEC APP的生命周期管理支持，也未涉及MEP与MEC APP之间的通信安全机制的具体实现，因此无法判断是否符合该评估条目要求。"
+                "comment": "提供的材料主要涉及5G核心网中UPF与SMF之间的N4接口安全机制，如IPsec、双向认证、访问控制等，未提及MEP（Multi-access Edge Platform）及MEC APP对MEP的API调用安全相关内容。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -421,10 +805,20 @@
         {
             "spec_id": "4.1.3.3.a",
             "spec_content": "4.1.3.3 应支持 MEP 与 MEC APP 的通信安全，对接入 MEP 的 MEC APP 进行安全认证、访问控制、操作审计和生命周期管理，对通信内容采用传输加密机制或协议.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "![](Data\\Markdown\\材料补充 - 核心网 - 参考_media/media/image11.png){width=\"5.768055555555556in\" height=\"2.171527777777778in\"}"
+                },
+                {
+                    "source": "材料4",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息 加密算法 空加密算法 无效值 3 NULL 加密算法 SNOW 3G加密算法 无效..."
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及与MEP（Multi-access Edge Platform）相关的功能或机制，如MEC应用的操作审计、通信安全认证、访问控制及生命周期管理等内容，因此无法判断是否符合该评估规范条目。"
+                "comment": "提供的材料中未提及MEP与MEC APP之间的通信安全机制、操作审计或访问控制相关内容，评估对象可能未覆盖该评估项。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -432,10 +826,49 @@
         {
             "spec_id": "4.1.3.3.c",
             "spec_content": "4.1.3.3 应支持 MEP 与 MEC APP 的通信安全，对接入 MEP 的 MEC APP 进行安全认证、访问控制、操作审计和生命周期管理，对通信内容采用传输加密机制或协议.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料3",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未明确提及 MEP（Multi-access Edge Platform）或与 MEC APP 的通信安全机制，无法验证是否满足对安全认证、访问控制等要求。因此判定为‘不涉及’。"
+                "comment": "提供的材料主要涉及UPF安全机制、N4接口安全保护及核心网相关配置，未提及MEP与MEC APP之间的通信安全机制、认证、访问控制等内容。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.1.3.3.b",
+            "spec_content": "4.1.3.3 应支持 MEP 与 MEC APP 的通信安全，对接入 MEP 的 MEC APP 进行安全认证、访问控制、操作审计和生命周期管理，对通信内容采用传输加密机制或协议.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "![](Data\\Markdown\\材料补充 - 核心网 - 参考_media/media/image11.png)"
+                },
+                {
+                    "source": "材料2",
+                    "content": "UPF：\n1.  5G专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。"
+                },
+                {
+                    "source": "材料5",
+                    "content": "确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料主要聚焦于5G核心网UPF相关安全机制，如N4接口保护、NAS加密、IP配置访问控制等，并未提及MEP与MEC APP之间的通信安全、生命周期管理或认证机制相关内容。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -443,10 +876,20 @@
         {
             "spec_id": "4.1.3.4.a",
             "spec_content": "4.1.3.4 应支持MEP中虚拟机运行情况检测，可及时发现安全威胁.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料4",
+                    "content": "| 操作 | 级别 | 告警ID | 名称 | 网元类型 | 告警源 | MO对象 | 定位信息 |"
+                },
+                {
+                    "source": "材料1",
+                    "content": "资源名称： UPFm003\nNNUPFm003BHW 应用\n从帐号： hw_dumingquan\n客户端： 360极速浏览器"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及MEP（Multi-access Edge Platform）或虚拟机状态检测相关功能，无法判断是否符合该评估条目要求。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，MEP系统中存在对虚拟机相关状态检测和告警记录的功能支持，符合4.1.3.4条目要求的虚拟机运行情况检测能力。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -454,10 +897,20 @@
         {
             "spec_id": "4.1.3.3.d",
             "spec_content": "4.1.3.3 应支持 MEP 与 MEC APP 的通信安全，对接入 MEP 的 MEC APP 进行安全认证、访问控制、操作审计和生命周期管理，对通信内容采用传输加密机制或协议.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。"
+                },
+                {
+                    "source": "材料4",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图。"
+                }
+            ],
             "conclusion": {
-                "judgement": "符合",
-                "comment": "根据提供的证明材料，系统中使用了如TLS 1.2或更高版本的传输加密机制，API端点要求身份验证令牌，并且对生产环境的访问需要VPN连接。这些措施满足MEP与MEC APP之间通信安全的要求。"
+                "judgement": "不涉及",
+                "comment": "提供的材料主要聚焦于5G核心网元（如UPF、AMF）的安全机制配置，包括加密、完整性保护及N4接口安全等，未提及MEP与MEC APP之间的通信安全机制。因此，无法判断是否符合4.1.3.3.d条目要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -465,10 +918,24 @@
         {
             "spec_id": "4.2.1.1.a",
             "spec_content": "4.2.1.1 应建立切片隔离管理机制，应支持多种隔离手段，可按需做好端到端切片隔离和网络分段管理，使得某一网络故障或遭受攻击时不会影响其它网络的正常运行.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。"
+                },
+                {
+                    "source": "材料1",
+                    "content": "查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、变更管理、日志审计和 incident response 等通用安全措施，未提及网络切片隔离或端到端分段管理相关内容，因此不涉及评估条目4.2.1.1.a的要求。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，系统支持切片网元隔离、资源专用性控制及安全域划分等机制，能够实现端到端的切片隔离和网络分段管理，满足故障或攻击时不影响其他切片运行的要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -476,10 +943,20 @@
         {
             "spec_id": "4.2.1.2.a",
             "spec_content": "4.2.1.2 应支持切片网元隔离，确保非共享网元只出现在一个切片中.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "> 提供UPF等下沉网元的LST SNSSAI、LST SLICEINSTINFO查询截图。"
+                },
+                {
+                    "source": "材料2",
+                    "content": "> RETCODE = 0 操作成功\n> 网络切片实例信息\n> --------------------\n> NsiInfo = zsh\n> NSSI ID = 1\n> (结果个数 = 1)\n> ---\n> END"
+                }
+            ],
             "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、身份认证、日志审计和数据加密等方面，未提及网络切片及网元隔离相关配置或实现情况，因此与评估条目4.2.1.2.a不直接相关。"
+                "judgement": "符合",
+                "comment": "根据提供的材料，网元查询结果显示非共享网元仅出现在一个切片中，满足切片网元隔离的要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -487,21 +964,20 @@
         {
             "spec_id": "4.2.1.3.a",
             "spec_content": "4.2.1.3 应根据切片实际安全需求，以虚拟机专用的方式对切片进行逻辑隔离，或以物理机专用等方式保证切片的物理资源隔离.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。"
+                },
+                {
+                    "source": "材料4",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及与网络切片隔离相关的资源配置或FusionSphere的使用情况，因此无法判断是否符合该评估条目。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.2.2.1.a",
-            "spec_content": "4.2.2.1 应支持终端接入请求安全，确保UE能按网络允许访问的切片发起切片请求.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及用户认证、API安全、数据加密和访问控制等方面，但未提及与5G网络切片或DNN（Data Network Name）相关的终端接入控制机制，因此无法直接支持或反驳评估条目4.2.2.1.a的要求。"
+                "comment": "提供的材料中未明确展示FusionSphere平台中关于虚拟机专用或物理机专用配置的具体信息，无法判断是否实现了逻辑或物理资源隔离。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -509,21 +985,45 @@
         {
             "spec_id": "4.2.2.2.a",
             "spec_content": "4.2.2.2 应支持切片内NF安全访问控制机制.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                },
+                {
+                    "source": "材料4",
+                    "content": "N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及有关切片内网络功能（NF）访问控制机制的具体实现或测试结果，无法直接验证是否支持切片内NF安全访问控制机制及注册流程的限制。"
+                "comment": "提供的材料中未包含与切片内NF（网元功能）安全访问控制机制直接相关的有效信息，无法判断是否支持切片内NF的安全访问控制。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "4.2.2.3.a",
-            "spec_content": "4.2.2.3 应支持安全域划分，应在切片管理域、切片运维域、切片与企业园区之间、切片与MEC 之间设置隔离和访问控制措施.",
-            "evidence": [],
+            "spec_id": "4.2.2.1.a",
+            "spec_content": "4.2.2.1 应支持终端接入请求安全，确保UE能按网络允许访问的切片发起切片请求.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                },
+                {
+                    "source": "材料5",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及用户认证、访问控制、数据加密和登录失败处理等通用安全措施，未提及与网络切片管理域、运维域、MEC或企业园区之间的安全域划分及隔离措施，因此与评估条目4.2.2.3.a无直接关联。"
+                "comment": "提供的材料中未涉及终端接入请求安全或切片/DNN授权注册相关测试内容，无法判断是否符合4.2.2.1.a条目要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -531,10 +1031,20 @@
         {
             "spec_id": "4.2.3.3.a",
             "spec_content": "4.2.3.3 切片应支持差异化的身份认证机制，可根据网元的重要性以及不同业务的安全要求，提供对等的身份认证等级，满足不同切片用户的安全要求。对于安全性要求一般的切片，应提供主认证框架，对于安全性要求较高的切片，可支持二次认证或切片认证.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                },
+                {
+                    "source": "材料4",
+                    "content": "专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及与5G网络切片身份认证机制相关的内容，无法判断是否支持差异化身份认证机制及对不同安全等级的切片用户进行认证。"
+                "comment": "提供的材料未涉及切片身份认证机制的具体实现，也未展示主认证或二次认证流程的测试结果。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -542,10 +1052,41 @@
         {
             "spec_id": "4.2.3.2.a",
             "spec_content": "4.2.3.2 切片管理接口、切片内部网元应支持双向身份认证机制，防止因非法访问导致信息泄露等安全问题.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料3",
+                    "content": "N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。"
+                },
+                {
+                    "source": "材料1",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及用户认证、数据传输加密、API 认证和访问控制等内容，但未提及网络切片管理接口或切片内部网元是否支持双向身份认证机制，因此无法确认该规范条目是否符合要求。"
+                "comment": "提供的材料中未明确提及切片管理接口或切片内部网元是否支持双向身份认证机制，无法判断该项是否符合规范。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.2.2.3.a",
+            "spec_content": "4.2.2.3 应支持安全域划分，应在切片管理域、切片运维域、切片与企业园区之间、切片与MEC 之间设置隔离和访问控制措施.",
+            "evidence": [
+                {
+                    "source": "材料2",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。提供UPF等下沉网元的LST SNSSAI、LST SLICEINSTINFO查询截图。"
+                },
+                {
+                    "source": "材料3",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\"; NNUPFm005BHW +++ UDG/*MEID:0 MENAME:...（表明访问控制列表与APN绑定配置存在）"
+                }
+            ],
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据提供的材料，系统支持对切片网元的隔离和访问控制措施，包括UPF等下沉网元的切片信息查询以及ACL规则配置，体现了安全域划分与隔离机制。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -553,10 +1094,20 @@
         {
             "spec_id": "4.3.1.a",
             "spec_content": "4.3.1 应从计算、存储和网络资源等方面加强网络虚拟化基础设施安全保障，对网络虚拟设施的所有操作应纳入统一管理平台，实现集中访问控制和安全审计.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";\nNNUPFm005BHW\n+++ UDG/*MEID:0 MENAME:..."
+                },
+                {
+                    "source": "材料2",
+                    "content": "资源名称： UPFm003\nNNUPFm003BHW 应用\n从帐号： hw_dumingquan\n客户端： 360极速浏览器"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及有关网络虚拟化基础设施的统一管理平台、集中访问控制或安全审计相关内容，无法判断是否符合该评估条目要求。"
+                "comment": "提供的材料中未明确展示统一管理平台对所有虚拟基础设施的纳管情况，也未体现集中访问控制和安全审计功能，因此无法判断是否符合该评估项。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -564,76 +1115,20 @@
         {
             "spec_id": "4.3.1.b",
             "spec_content": "4.3.1 应从计算、存储和网络资源等方面加强网络虚拟化基础设施安全保障，对网络虚拟设施的所有操作应纳入统一管理平台，实现集中访问控制和安全审计.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";\nNNUPFm005BHW\n+++ UDG/*MEID:0 MENAME:..."
+                },
+                {
+                    "source": "材料2",
+                    "content": "资源名称： UPFm003\nNNUPFm003BHW 应用\n从帐号： hw_dumingquan\n客户端： 360极速浏览器"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及统一管理平台对计算、存储和网络资源的监控能力，也未涉及对网络虚拟设施操作的安全审计功能，因此无法判断是否符合该评估条目。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.3.2.a",
-            "spec_content": "4.3.2 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及虚拟基础设施的安全域划分、虚拟网络或安全组配置相关内容，无法判断该评估项是否符合要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.3.4.a",
-            "spec_content": "4.3.4 当网络功能以容器形式部署时，应支持网元容器配置安全检查、网元容器运行时的安全检测和防御.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未提及与容器安全配置检查、运行时检测和防御相关的内容，因此无法判断是否符合该评估条目要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.3.3.a",
-            "spec_content": "4.3.3 应定期对物理/虚机操作系统、虚拟化软件、第三方开源软件实施安全加固.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "符合",
-                "comment": "根据提供的证明材料，材料1表明第三方库每季度进行安全审查，材料2显示所有服务器在发布30天内应用最新的安全补丁，这表明对操作系统和软件进行了定期安全加固。虽然未明确提及虚拟化软件及统一运维平台，但结合行业常规实践和材料中体现的安全管理机制，可合理判断满足该评估项的要求。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.4.1.a",
-            "spec_content": "4.4.1 能力开放平台或者能力开放网元与行业网络之间应配置安全隔离和访问控制措施.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料未明确提及能力开放平台或能力开放网元与行业网络之间的安全隔离和访问控制措施，无法直接支持或反驳该评估条目要求。因此判定为‘不涉及’。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.4.2.a",
-            "spec_content": "4.4.2 应建立网络能力差异化开放机制，可结合实际应用场景需求，为行业用户提供差异化的5G网络能力（包括安全能力）开放权限.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "符合",
-                "comment": "根据材料1，系统支持基于角色的访问控制，并具有5种预定义的权限级别，这表明具备差异化权限管理机制。结合评估规范4.4.2.a的要求，可以认定其建立了网络能力的差异化开放机制，能够根据不同应用场景提供差异化的网络能力（包括安全能力）权限。"
-            },
-            "status": "success",
-            "error_message": null
-        },
-        {
-            "spec_id": "4.4.3.a",
-            "spec_content": "4.4.3 应具备5G网络能力开放接口安全保护能力，针对5G网络能力开放接口建立相关安全机制和防护措施，比如API认证、加密传输、日志审计等.",
-            "evidence": [],
-            "conclusion": {
-                "judgement": "不涉及",
-                "comment": "提供的证明材料主要涉及访问控制、日志记录、第三方库管理和事件响应等方面，但未提及与5G网络能力开放接口相关的安全机制，如API认证、加密传输、日志审计等。因此无法确认是否满足该评估条目要求。"
+                "comment": "提供的材料未展示统一管理平台对计算、存储和网络资源的集中访问控制与安全审计功能，无法判断是否符合相关要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
@@ -641,41 +1136,191 @@
         {
             "spec_id": "4.2.3.4.a",
             "spec_content": "4.2.3.4 网络切片管理系统和认证授权服务器应支持最小权限管理，只授予用户所需的最小权限，使其只能操作和监控自己的切片资源.",
-            "evidence": [],
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "RETCODE = 0 操作成功\n网络切片实例信息\n--------------------\nNsiInfo = zsh\nNSSI ID = 1\n(结果个数 = 1)"
+                },
+                {
+                    "source": "材料2",
+                    "content": "资源名称： UPFm003\nNNUPFm003BHW 应用\n从帐号： hw_dumingquan\n客户端： 360极速浏览器"
+                },
+                {
+                    "source": "材料3",
+                    "content": "应支持切片网元隔离，确保非共享网元只出现在一个切片中。"
+                },
+                {
+                    "source": "材料4",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";\nNNUPFm005BHW"
+                },
+                {
+                    "source": "材料5",
+                    "content": "IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未直接涉及网络切片管理系统或认证授权服务器对最小权限管理的支持，无法判断是否满足该评估条目要求。"
+                "comment": "提供的材料中未涉及网络切片管理系统或认证授权服务器的权限管理配置，也未体现测试账号访问控制情况，因此无法判断是否符合最小权限管理要求。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "3.2.3.1.b",
-            "spec_content": "3.2.3.1 5G专网N2接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制.",
-            "evidence": [],
+            "spec_id": "4.3.2.a",
+            "spec_content": "4.3.2 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "资源名称：UPFm003"
+                },
+                {
+                    "source": "材料2",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                },
+                {
+                    "source": "材料3",
+                    "content": "查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及N2接口的安全机制，也未说明是否采用物理隔离或其他安全措施（如机密性、完整性、抗重放保护）。因此无法判断该条目是否符合要求。"
+                "comment": "提供的材料中未包含与虚拟机内部安全域划分、虚拟网络配置、安全组配置等直接相关的说明或截图，无法判断是否根据功能合理划分了内部安全域并实施了域间隔离和访问控制。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         },
         {
-            "spec_id": "3.2.3.1.a",
-            "spec_content": "3.2.3.1 5G专网N2接口应支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制.",
-            "evidence": [],
+            "spec_id": "4.3.4.a",
+            "spec_content": "4.3.4 当网络功能以容器形式部署时，应支持网元容器配置安全检查、网元容器运行时的安全检测和防御.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "资源名称：UPFm003"
+                },
+                {
+                    "source": "材料2",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                },
+                {
+                    "source": "材料3",
+                    "content": "IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                }
+            ],
             "conclusion": {
                 "judgement": "不涉及",
-                "comment": "提供的证明材料未提及N2接口或相关传输安全配置，无法判断是否支持物理隔离或具备机密性、完整性、抗重放保护机制。"
+                "comment": "提供的材料中未提及与容器配置安全检查或运行时安全检测相关的具体内容，无法确认是否满足该评估项。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.4.1.a",
+            "spec_content": "4.4.1 能力开放平台或者能力开放网元与行业网络之间应配置安全隔离和访问控制措施.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";"
+                },
+                {
+                    "source": "材料4",
+                    "content": "提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图\nIPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                }
+            ],
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据提供的材料，存在能力开放平台或网元与行业网络之间配置安全隔离和访问控制措施的相关证据，例如ACL规则配置、IPsec及IKE安全策略等。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.4.3.a",
+            "spec_content": "4.4.3 应具备5G网络能力开放接口安全保护能力，针对5G网络能力开放接口建立相关安全机制和防护措施，比如API认证、加密传输、日志审计等.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：1、IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料2",
+                    "content": "IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料主要聚焦于5G网络中的加密机制、IPsec配置、访问控制列表（ACL）和部分核心网安全功能，未提及与网络能力开放接口（如API认证、加密传输、日志审计等）相关的具体安全措施。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.3.3.a",
+            "spec_content": "4.3.3 应定期对物理/虚机操作系统、虚拟化软件、第三方开源软件实施安全加固.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "LST ACLBINDAPN:APN=\"cmiot5g\";\nNNUPFm005BHW\n+++ UDG/*MEID:0 MENAME:..."
+                },
+                {
+                    "source": "材料2",
+                    "content": "RETCODE = 0 操作成功\n网络切片实例信息\n--------------------\nNsiInfo = zsh\nNSSI ID = 1"
+                },
+                {
+                    "source": "材料3",
+                    "content": "IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料4",
+                    "content": "资源名称： UPFm003\nNNUPFm003BHW 应用\n从帐号： hw_dumingquan\n客户端： 360极速浏览器"
+                },
+                {
+                    "source": "材料5",
+                    "content": "5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料未涉及物理/虚机操作系统、虚拟化软件或第三方开源软件的安全加固记录与补丁版本核查，也未体现统一运维管理平台及安全运维机制相关内容。",
+                "evidence": null
+            },
+            "status": "success",
+            "error_message": null
+        },
+        {
+            "spec_id": "4.4.2.a",
+            "spec_content": "4.4.2 应建立网络能力差异化开放机制，可结合实际应用场景需求，为行业用户提供差异化的5G网络能力（包括安全能力）开放权限.",
+            "evidence": [
+                {
+                    "source": "材料1",
+                    "content": "安全能力：IPS/IDS、抗DDoS设备、防病毒软件、安全配置核查、主机配置防篡改等安全机制截图"
+                },
+                {
+                    "source": "材料2",
+                    "content": "IPsec提议和IKE提议是两个提供安全保护策略，可按需配置。"
+                },
+                {
+                    "source": "材料5",
+                    "content": "算法类型 加密算法 完整性算法 算法优先级 描述信息"
+                }
+            ],
+            "conclusion": {
+                "judgement": "不涉及",
+                "comment": "提供的材料主要涉及5G网络的安全机制配置（如加密、完整性保护、访问控制等），但未提及能力开放平台或差异化网络能力（如为行业用户提供不同级别的API、安全能力等）的机制设计与实现，因此该评估项不涉及。",
+                "evidence": null
             },
             "status": "success",
             "error_message": null
         }
     ],
     "statics": {
-        "compliant": 5,
-        "non_compliant": 1,
-        "not_applicable": 55,
+        "compliant": 18,
+        "non_compliant": 10,
+        "not_applicable": 33,
         "not_processed": 0
     }
 }

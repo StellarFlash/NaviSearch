@@ -61,8 +61,8 @@ class LLMAssessmentClient:
         print(f"调用 LLM，规范 ID {spec_item.id}，证据数量: {len(evidences)}...")
         # --- 构建 Prompt（类似于设计说明） ---
         prompt_template = """
-请根据以下网络安全评估规范条目和提供的证明材料，给出评估结论。
-结论应为以下三者之一：符合、不符合、不涉及。
+请根据以下网络安全评估规范条目和提供的证明材料，给出评估结论，并附上支持结论的材料来源。
+判断的取值应为以下三者之一：符合、不符合、不涉及。
 并提供简要的补充说明。
 评估规范条目ID: {spec_item_id}
 评估规范标题: {spec_item_heading}
@@ -71,11 +71,18 @@ class LLMAssessmentClient:
 相关证明材料:
 {formatted_evidences}
 输出格式为JSON:
-{{
 "judgement": "符合/不符合/不涉及",
-"comment": "补充说明..."
-}}
+"comment": "补充说明...",
+"evidence": [
+    "source":"材料1",
+    "content":"与评估直接相关的证明材料的段落，使用原始表达，保留完整段落"
+
+    "source":"材料2",
+    "content":"与评估直接相关的证明材料的段落"
+]
+
 """
+        # print("prompt_template:", prompt_template)  # 打印完整的 Prompt，用于调试
         formatted_evidences = ""
         if evidences:
             for i, ev in enumerate(evidences):
@@ -89,10 +96,12 @@ class LLMAssessmentClient:
             spec_item_method=spec_item.method,
             formatted_evidences=formatted_evidences
         )
+        # print("生成的 Prompt:", prompt)  # 打印完整的 Prompt，用于调试
         conclusion = Conclusion(
             spec_item_id=spec_item.id,
             judgement=Judgement.NOT_PROCESSED,  # 默认值
-            comment="LLM返回的响应格式不正确"
+            comment="LLM返回的响应格式不正确",
+            evidence=[]
         )
         # --- 解析 OpenAI API 响应 ---
         try:
@@ -107,8 +116,7 @@ class LLMAssessmentClient:
             # 解析响应并验证
             llm_response = json.loads(response.choices[0].message.content)
 
-
-            if not all(key in llm_response for key in ["judgement", "comment"]):
+            if not all(key in llm_response for key in ["judgement", "comment", "evidence"]):
                 conclusion.comment = "LLM响应缺少必要的字段"
                 return conclusion
 
@@ -123,7 +131,8 @@ class LLMAssessmentClient:
             return Conclusion(
                 spec_item_id=spec_item.id,
                 judgement=judgement,
-                comment=llm_response["comment"]
+                comment=llm_response["comment"],
+                evidence=llm_response["evidence"]
             )
 
         except json.JSONDecodeError as e:
