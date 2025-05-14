@@ -1,2 +1,7 @@
 .env
-Data/*
+Docs/*
+Data/Markdown/*
+Data/Records/*
+Data/Corpus/*
+AssessmentSystem/assessment_report*
+AssessmentSystem/evidences.jsonl
