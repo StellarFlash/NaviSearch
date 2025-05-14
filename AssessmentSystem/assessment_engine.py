@@ -11,6 +11,7 @@ from AssessmentSystem.model import (
     Judgement,
     AssessmentStatus,
     Conclusion,
+    EvidenceSearchParams,
     EvidenceSearchResult # 导入EvidenceSearchResult，因为worker返回的结果中包含它
 )
 from AssessmentSystem.spec_loader import SpecLoader
@@ -192,6 +193,7 @@ class AssessmentEngine:
                         AssessmentResult(
                             spec_id=spec_id,
                             spec_content="加载规范内容失败或处理异常", # 尝试获取原始内容，如果可以
+                            evidence_search_params = EvidenceSearchParams(query_text = "", filter_tags = []),
                             status=AssessmentStatus.FAIL,
                             error_message=f"未捕获的异常: {str(e)}"
                         )
@@ -209,25 +211,26 @@ class AssessmentEngine:
             # 1. 直接获取顶层的 evidence 列表
             # 假设 worker_result_dict["evidence"] 已经是 List[EvidenceSearchResult]
             # 或者在出错时是 List[Dict] (例如，如果LLM返回了原始字典而不是对象)
-            evidence_from_worker = worker_result_dict.get("evidence", [])
+            # evidence_from_worker = worker_result_dict.get("evidence", [])
 
-            parsed_evidence_list: List[EvidenceSearchResult] = []
-            if isinstance(evidence_from_worker, list):
-                for item in evidence_from_worker:
-                    if isinstance(item, EvidenceSearchResult): # 如果已经是 EvidenceSearchResult 对象
-                        parsed_evidence_list.append(item)
-                    elif isinstance(item, dict): # 如果是字典，尝试实例化（作为一种兼容或错误恢复）
-                        try:
-                            # 确保这里的 EvidenceSearchResult 模型定义与 LLMClient 中的一致
-                            # 特别是如果它包含如 'tags' 等额外字段
-                            parsed_evidence_list.append(EvidenceSearchResult(**item))
-                        except Exception as e_instantiate:
-                            print(f"警告: 无法将字典实例化为 EvidenceSearchResult: {item}, 错误: {e_instantiate}")
-                    else:
-                        print(f"警告: 'evidence' 列表中包含意外类型: {type(item)}")
-            else:
-                print(f"警告: worker_result_dict 中的 'evidence' 不是列表，实际类型: {type(evidence_from_worker)}")
-
+            # parsed_evidence_list: List[EvidenceSearchResult] = []
+            # if isinstance(evidence_from_worker, list):
+            #     for item in evidence_from_worker:
+            #         if isinstance(item, EvidenceSearchResult): # 如果已经是 EvidenceSearchResult 对象
+            #             parsed_evidence_list.append(item)
+            #         elif isinstance(item, dict): # 如果是字典，尝试实例化（作为一种兼容或错误恢复）
+            #             try:
+            #                 # 确保这里的 EvidenceSearchResult 模型定义与 LLMClient 中的一致
+            #                 # 特别是如果它包含如 'tags' 等额外字段
+            #                 parsed_evidence_list.append(EvidenceSearchResult(**item))
+            #             except Exception as e_instantiate:
+            #                 print(f"警告: 无法将字典实例化为 EvidenceSearchResult: {item}, 错误: {e_instantiate}")
+            #         else:
+            #             print(f"警告: 'evidence' 列表中包含意外类型: {type(item)}")
+            # else:
+            #     print(f"警告: worker_result_dict 中的 'evidence' 不是列表，实际类型: {type(evidence_from_worker)}")
+            # 1. 解析 evidence 搜索阐述
+            evidence_search_parmas = worker_result_dict.get("evidence_search_parmas")
             # 2. 解析 conclusion 字典中的 judgement 和 comment
             conclusion_data = worker_result_dict.get("conclusion", {})
             judgement_str = conclusion_data.get("judgement", Judgement.NOT_PROCESSED.value).strip().lower()
@@ -243,7 +246,7 @@ class AssessmentEngine:
             conclusion_obj = Conclusion(
                 judgement=judgement,
                 comment=comment,
-                evidence=parsed_evidence_list  # <--- 关键修正：将解析后的证据列表传递给 Conclusion 对象
+                evidence=worker_result_dict.get("evidence", []) # 直接使用 worker 返回的 evidence 列表
             )
 
             # 4. 解析状态和错误信息
@@ -265,7 +268,7 @@ class AssessmentEngine:
             return AssessmentResult(
                 spec_id=worker_result_dict.get("spec_id", "未知ID"),
                 spec_content=worker_result_dict.get("spec_content", "未知内容"),
-                evidence=parsed_evidence_list,  # <--- 关键修正：顶层 AssessmentResult.evidence 也使用解析后的列表
+                evidence_search_params = evidence_search_parmas,
                 conclusion=conclusion_obj,
                 status=status,
                 error_message=error_message
@@ -276,8 +279,8 @@ class AssessmentEngine:
             return AssessmentResult(
                 spec_id=worker_result_dict.get("spec_id", "解析错误"),
                 spec_content=worker_result_dict.get("spec_content", "内容解析错误"),
+                evidence_search_params = evidence_search_parmas,
                 status=AssessmentStatus.FAIL,
-                evidence=[], # 确保 evidence 是列表
                 conclusion=Conclusion(judgement=Judgement.ERROR, comment=f"引擎解析worker结果失败: {str(e)}", evidence=[]),
                 error_message=f"引擎解析worker结果失败: {str(e)}"
             )

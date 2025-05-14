@@ -276,7 +276,7 @@ class NaviSearchClient:
                 filter_tags=current_tags,
                 mode="standard"
             )
-
+            evidence_search_params = EvidenceSearchParams(query_text= current_query, filter_tags = current_tags)
             if raw_search_result.get("status") == "success":
                 final_ranked_records_from_api = raw_search_result.get("ranked_records", [])
 
@@ -315,7 +315,7 @@ class NaviSearchClient:
                     )
                 )
         print(f"迭代搜索完成。最终返回 {len(evidence_results)} 条证据。")
-        return evidence_results
+        return evidence_results, evidence_search_params
 
 # 示例用法（假设您的 FastAPI 服务正在运行）
 if __name__ == "__main__":

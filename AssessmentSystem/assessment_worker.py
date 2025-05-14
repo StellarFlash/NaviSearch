@@ -27,7 +27,7 @@ class AssessmentWorker:
             # 1. Search for evidence
             # Using a simple timeout mechanism for the whole process_task
             # More granular timeouts for search and LLM calls might be needed in practice.
-            evidences_found = self.navisearch_client.search_evidence(spec_item)
+            evidences_found, evidence_search_params = self.navisearch_client.search_evidence(spec_item)
             if time.time() - start_time > self.timeout_seconds:
                 raise FuturesTimeoutError("Evidence search and processing timed out")
 
@@ -40,6 +40,7 @@ class AssessmentWorker:
             return {
                 "spec_id": spec_item.id,
                 "spec_content": spec_item.content,
+                "evidence_search_parmas":evidence_search_params,
                 "evidence": llm_response_data.evidence, # List of dicts with 'source', 'content'
                 "conclusion": {
                     "judgement": llm_response_data.judgement,
@@ -52,6 +53,7 @@ class AssessmentWorker:
             return {
                 "spec_id": spec_item.id,
                 "spec_content": spec_item.content,
+                "evidence_search_parmas":EvidenceSearchParams(query_text="",filter_tags=[]),
                 "evidence": [],
                 "conclusion": {"judgement": "Error", "comment": f"Processing timed out after {self.timeout_seconds} seconds."},
                 "status": "timeout"
@@ -61,6 +63,7 @@ class AssessmentWorker:
             return {
                 "spec_id": spec_item.id,
                 "spec_content": spec_item.content,
+                "evidence_search_parmas":EvidenceSearchParams(query_text="",filter_tags=[]),
                 "evidence": [],
                 "conclusion": {"judgement": "Error", "comment": f"An error occurred: {str(e)}"},
                 "status": "error"

@@ -159,7 +159,7 @@ with gr.Blocks(title="NaviSearch 调试界面", theme=gr.themes.Soft()) as demo:
             act_cb_upd,                         # 更新 activated_tags_checkbox_group
             rank_cb_upd                         # 更新 ranked_tags_checkbox_group
         )
-
+# pylint: disable=no-member # 忽略 Gradio 动态生成的属性警告
     search_btn.click(
         fn=handle_search_button_click,
         inputs=[

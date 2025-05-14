@@ -74,7 +74,7 @@ class AssessmentResult(BaseModel):
     """单项评估结果数据结构"""
     spec_id: str                                  # 对应规范ID
     spec_content: str                             # 规范内容
-    evidence: List[EvidenceSearchResult] = []     # 使用的证据列表
+    evidence_search_params: EvidenceSearchParams
     conclusion: Conclusion = Conclusion()         # 评估结论
     status: AssessmentStatus = AssessmentStatus.RUNNING  # 状态，默认'评估中'
     error_message: Optional[str] = None           # 错误信息(可选)
