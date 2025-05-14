@@ -324,8 +324,8 @@ class NaviSearchClient:
 # 示例用法（假设您的 FastAPI 服务正在运行）
 if __name__ == "__main__":
     # 替换为您实际运行的 Admin 和 Visitor FastAPI 服务的 URL
-    admin_api_url = os.getenv("ADMIN_API_HOST") + ":" + os.getenv("ADMIN_API_PORT")
-    visitor_api_url = os.getenv("VISITOR_API_HOST") + ":" + os.getenv("VISITOR_API_PORT")
+    admin_api_url = "http://" + os.getenv("ADMIN_API_HOST") + ":" + os.getenv("ADMIN_API_PORT")
+    visitor_api_url = "http://" + os.getenv("VISITOR_API_HOST") + ":" + os.getenv("VISITOR_API_PORT")
     collection_name = "my_evidence_collection"
 
     print(f"尝试连接 Admin ({admin_api_url})")

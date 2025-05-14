@@ -25,12 +25,6 @@ python VisitorWebui.py &
 
 echo "All services started in the background."
 echo ""
-echo "Access the services at:"
-echo "- Admin Web UI: http://localhost:7861"
-echo "- Visitor Web UI: http://localhost:7860"
-echo "- Admin API: http://localhost:8001"
-echo "- Visitor API: http://localhost:8000"
-echo ""
 echo "Note: Press Ctrl+C to stop all services."
 
 # Keep the script running to keep background processes alive
