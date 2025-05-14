@@ -7,7 +7,7 @@ import json
 dotenv.load_dotenv() # 加载 .env 文件中的环境变量到 environmen
 
 # FastAPI服务地址
-VISITOR_API_URL = os.getenv("VISITOR_API_HOST") + os.getenv("VISITOR_API_PORT")# 请确保您的FastAPI服务在此地址运行
+VISITOR_API_URL = os.getenv("VISITOR_API_HOST") +":" + os.getenv("VISITOR_API_PORT")# 请确保您的FastAPI服务在此地址运行
 
 # 初始默认的标签池 (如果需要在没有任何搜索结果时显示一些标签)
 initial_filter_tags_pool = [
