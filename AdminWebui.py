@@ -1,19 +1,23 @@
 # NaviSearchAdminWebui.py
 # Milvus Collection 和 Document 管理的 Gradio Web UI
 
+import os
 import sys
+import dotenv
 import gradio as gr
 import requests
 import json
 import traceback # 用于更详细的错误日志输出
 from typing import List, Dict, Any, Optional, Union, Tuple, AsyncIterator
+
+dotenv.load_dotenv()
 # FastAPI 后端服务地址
 # 请确保这里的地址和端口与您的 AdminFastAPI.py 中 uvicorn.run 配置的一致
-ADMIN_FASTAPI_URL = "http://localhost:8001"
+ADMIN_FASTAPI_URL = os.getenv("ADMIN_API_HOST") + ":" + os.getenv("ADMIN_API_PORT")
 
 # Milvus 向量嵌入维度
 # 需要与后端 AdminCore 中的 DEFAULT_DIM 保持一致，用于前端输入提示和验证
-DEFAULT_DIM = 1024 # TODO: 考虑从后端 API 获取此值以确保一致性
+DEFAULT_DIM = 1024
 
 # --- API 调用函数 ---
 
@@ -583,7 +587,9 @@ with gr.Blocks(title="NaviSearch Admin 管理界面", theme=gr.themes.Soft()) as
 
 if __name__ == "__main__":
     # 确保 AdminCore.py 包含必要的 Milvus 连接设置或默认值
-    print(f"NaviSearch Admin Gradio UI 正在启动，访问地址: http://127.0.0.1:7861")
+    ADMIN_WEBUI_HOST = os.getenv("ADMIN_WEBUI_HOST", "0.0.0.0")
+    ADMIN_WEBUI_PORT = int(os.getenv("ADMIN_WEBUI_PORT", 7861))
+    print(f"NaviSearch Admin Gradio UI 正在启动，访问地址: {ADMIN_WEBUI_HOST}:{ADMIN_WEBUI_PORT}")
     print(f"请确保您的 Admin FastAPI 服务正在运行在 {ADMIN_FASTAPI_URL}")
     # 启动 Gradio 应用，指定服务器端口
-    demo.launch(server_port=7861)
+    demo.launch(server_port=ADMIN_WEBUI_PORT)

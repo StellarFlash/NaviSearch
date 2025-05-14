@@ -1,6 +1,11 @@
+import os
+import dotenv
+import uvicorn
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
+
+dotenv.load_dotenv()  # 加载 .env 文件中的环境变量
 
 # 假设 VisitorCore.py 文件位于与此文件相同的目录下
 try:
@@ -16,8 +21,8 @@ except ImportError as e:
     raise e
 
 # --- 全局变量控制 IP 和端口 ---
-SERVICE_HOST = "0.0.0.0"  # 监听所有可用接口
-SERVICE_PORT = 8000      # 服务端口
+VISITOR_API_HOST = os.getenv("VISITOR_API_HOST")  # 监听所有可用接口
+VISITOR_API_PORT = int(os.getenv("VISITOR_API_PORT"))      # 服务端口
 
 # --- 全局 Visitor 实例 ---
 # 在应用启动时创建 Visitor 实例
@@ -236,7 +241,7 @@ def search_endpoint(request: SearchRequest):
 
 # --- 运行服务 ---
 if __name__ == "__main__":
-    import uvicorn
-    # 使用全局变量 SERVICE_HOST 和 SERVICE_PORT 运行服务
-    print(f"Starting NaviSearch Visitor Service on http://{SERVICE_HOST}:{SERVICE_PORT}")
-    uvicorn.run(app, host=SERVICE_HOST, port=SERVICE_PORT)
+
+    # 使用全局变量 VISITOR_API_HOST 和 VISITOR_API_PORT 运行服务
+    print(f"Starting NaviSearch Visitor Service on http://{VISITOR_API_HOST}:{VISITOR_API_PORT}")
+    uvicorn.run(app, host=VISITOR_API_HOST, port=VISITOR_API_PORT)

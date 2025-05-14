@@ -1,9 +1,13 @@
+import os
+import dotenv
 import gradio as gr
 import requests
 import json
 
+dotenv.load_dotenv() # 加载 .env 文件中的环境变量到 environmen
+
 # FastAPI服务地址
-FASTAPI_URL = "http://localhost:8000" # 请确保您的FastAPI服务在此地址运行
+VISITOR_API_URL = os.getenv("VISITOR_API_HOST") + os.getenv("VISITOR_API_PORT")# 请确保您的FastAPI服务在此地址运行
 
 # 初始默认的标签池 (如果需要在没有任何搜索结果时显示一些标签)
 initial_filter_tags_pool = [
@@ -24,7 +28,7 @@ def call_search_api(query_text: str, active_tags_list: list, mode: str, retrieva
         "rerank_top_k_standard": rerank_top_k_standard
     }
     try:
-        response = requests.post(f"{FASTAPI_URL}/search", json=payload)
+        response = requests.post(f"{VISITOR_API_URL}/search", json=payload)
         response.raise_for_status() # 如果HTTP请求返回了错误状态码，则抛出HTTPError异常
         return response.json()
     except requests.exceptions.RequestException as e:
@@ -253,32 +257,11 @@ with gr.Blocks(title="NaviSearch 调试界面", theme=gr.themes.Soft()) as demo:
         outputs=[s_ranked_tags_from_api, activated_tags_checkbox_group, ranked_tags_checkbox_group] # 更新状态和组件
     )
 
-
 if __name__ == "__main__":
-    # 提示: 要运行此 Gradio 应用, 您需要 FastAPI 后端服务在 FASTAPI_URL 指定的地址上运行。
-    # 如果您想在没有后端服务的情况下测试前端逻辑, 可以取消注释下面的 mock 函数并用它替换 call_search_api。
-
-    # def mock_call_search_api(query_text, filter_tags, mode, retrieval_top_k, rerank_strategy, rerank_top_k_standard):
-    #     print(f"Mock API Call: query='{query_text}', filter_tags={filter_tags}, mode='{mode}', retrieval_k={retrieval_top_k}, rerank_strat='{rerank_strategy}', rerank_k={rerank_top_k_standard}")
-    #     # 生成一些模拟的 ranked_tags
-    #     _ranked_tags = ["tag_A_from_mock", "tag_B_from_mock", "核心网", "5G", query_text[:5]+"_qtag" if query_text else "default_qtag"]
-    #     if filter_tags: # 将已激活的标签也加入到返回的ranked_tags中，使得逻辑自洽
-    #         _ranked_tags.extend(filter_tags)
-    #     _ranked_tags = sorted(list(set(_ranked_tags))) # 保证唯一并排序
-
-    #     _records = [
-    #         {"id": "doc_mock_1", "tags": ["tag_A_from_mock", "核心网"] + filter_tags, "content": f"这是与查询 '{query_text}' 和标签 'tag_A_from_mock' 相关的内容。模式: {mode}。"},
-    #         {"id": "doc_mock_2", "tags": ["tag_B_from_mock", "5G"], "content": f"另一条关于 '{query_text}' 的信息。召回数量: {retrieval_top_k}。"},
-    #         {"id": "doc_mock_3", "tags": filter_tags if filter_tags else ["通用文档"], "content": "基于已激活标签 " + (", ".join(filter_tags) if filter_tags else "无") + " 过滤的内容。"}
-    #     ]
-    #     # 只返回 rerank_top_k_standard 数量的记录
-    #     _records = _records[:rerank_top_k_standard]
-
-    #     return {
-    #         "status": "success",
-    #         "ranked_records": _records,
-    #         "ranked_tags": _ranked_tags
-    #     }
-    # call_search_api = mock_call_search_api # 取消此行注释以使用 mock API
-
-    demo.launch()
+    # 确保 AdminCore.py 包含必要的 Milvus 连接设置或默认值
+    VISITOR_WEBUI_HOST = os.getenv("VISITOR_WEBUI_HOST", "0.0.0.0")
+    VISITOR_WEBUI_PORT = int(os.getenv("VISITOR_WEBUI_PORT", 7861))
+    print(f"NaviSearch Admin Gradio UI 正在启动，访问地址: {VISITOR_WEBUI_HOST}:{VISITOR_WEBUI_PORT}")
+    print(f"请确保您的 Admin FastAPI 服务正在运行在 {VISITOR_API_URL}")
+    # 启动 Gradio 应用，指定服务器端口
+    demo.launch(server_port=VISITOR_WEBUI_PORT)

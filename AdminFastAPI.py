@@ -1,14 +1,19 @@
 # AdminFastAPI.py
 # 提供 Milvus Collection 和 Document 管理的 FastAPI 接口
-
+import os
+import sys
+import dotenv
 import traceback
+import uvicorn
 from typing import List, Dict, Optional, Any
 from fastapi import FastAPI, Depends, HTTPException, status, Body
 from pydantic import BaseModel, Field, ValidationError
-import sys
 
 # 从 pymilvus 导入构建 schema 所需的类和枚举
 from pymilvus import FieldSchema, CollectionSchema, DataType
+
+dotenv.load_dotenv()
+
 
 # 尝试导入 AdminCore 和 get_embedding
 try:
@@ -423,7 +428,27 @@ def api_insert_records(request: InsertRecordsRequest, admin: NaviSearchAdmin = D
 # --- 运行 FastAPI 应用 ---
 
 if __name__ == "__main__":
-    import uvicorn
-    # 确保 AdminCore.py 包含必要的 Milvus 连接设置或默认值
-    print("FastAPI 服务器正在启动，监听地址: http://127.0.0.1:8001")
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+
+    # 从环境变量读取 Admin API 的 IP (ADMIN_API_HOST)，优先从 .env 文件或系统环境变量读取
+    # 如果 ADMIN_API_HOST 未设置，则使用默认值 '127.0.0.1'
+    host = os.environ.get('ADMIN_API_HOST', '127.0.0.1')
+
+    # 从环境变量读取 Admin API 的 PORT (ADMIN_API_PORT)，优先从 .env 文件或系统环境变量读取
+    # 如果 ADMIN_API_PORT 未设置，则使用默认值 8001
+    # 注意：环境变量的值总是字符串，uvicorn 的 port 参数需要是整数
+    default_port = 8001
+    try:
+        # 获取 ADMIN_API_PORT 的字符串值，如果不存在则使用默认端口的字符串形式 '8001'
+        port_str = os.environ.get('ADMIN_API_PORT', str(default_port))
+        # 尝试将获取到的字符串转换为整数
+        port = int(port_str)
+    except ValueError:
+        # 如果 ADMIN_API_PORT 环境变量的值不是一个有效的整数，则捕获错误并使用默认端口
+        print(f"警告: 无效的 ADMIN_API_PORT 环境变量值 '{os.environ.get('ADMIN_API_PORT')}'. 将使用默认端口 {default_port}.")
+        port = default_port
+
+    print(f"Admin FastAPI 服务器正在启动，监听地址: http://{host}:{port}")
+
+    # 使用从环境变量或默认值获取的 host 和 port 来运行 uvicorn
+    # 确保 app 变量在这里是你的 FastAPI 应用实例
+    uvicorn.run(app, host=host, port=port)
