@@ -1,7 +1,8 @@
 .env
 Docs/*
-Data/Markdown/*
-Data/Records/*
-Data/Corpus/*
+Data/Markdown/**
+Data/Records/**
+Data/Corpus/**
+Data/Chunks/**
 AssessmentSystem/assessment_report*
 AssessmentSystem/evidences.jsonl
