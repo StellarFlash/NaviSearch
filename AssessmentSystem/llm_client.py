@@ -284,6 +284,9 @@ class LLMAssessmentClient:
                 default_conclusion.comment = "LLM返回了空响应。"
                 return default_conclusion
 
+            # 新增：去除Markdown代码块标记
+            if llm_response_content.startswith('```json'):
+                llm_response_content = llm_response_content[7:-3].strip()  # 去除```json和结尾的```
             llm_response = json.loads(llm_response_content)
 
             # 验证响应中是否包含所有必要字段

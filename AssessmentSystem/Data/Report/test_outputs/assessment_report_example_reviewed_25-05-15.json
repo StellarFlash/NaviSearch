@@ -1,0 +1,162 @@
+{
+    "statics": {
+        "compliant": 2,
+        "non_compliant": 0,
+        "not_applicable": 0,
+        "not_processed": 0
+    },
+    "assessment_results": [
+        {
+            "spec_id": "3.1.3.1.b",
+            "spec_content": "3.1.3.1 5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。",
+            "evidence_search_params": {
+                "query_text": "5G核心网是否支持通过二次认证系统配置流量限制规则（如协议、带宽、时间段等），并验证在异常流量行为下规则的有效性。",
+                "filter_tags": [
+                    "LST IPSECPOLICY",
+                    "分流策略",
+                    "访问控制(Access Control)",
+                    "securityIndication.integrityProtectionIndication=required",
+                    "LST DDOS",
+                    "GTP-U",
+                    "AMF"
+                ],
+                "terminated": false
+            },
+            "conclusion": {
+                "judgement": "不符合",
+                "comment": "这是一个由测试代码修改的审核评论。",
+                "evidence": [
+                    {
+                        "evidence_id": "458013357677764955",
+                        "source": "458013357677764955",
+                        "content": "1.  5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。  \n> 确认核心网侧是否针对该项目终端的接入做了额外配置；说明该项目网络中是否部署二次认证等安全能力，并提供证明材料。  \n2.  5G\n专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）  \n> 核心网侧确认是否在AMF上开启NAS加密  \n3.  5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。  \n> 提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图  \n4.  N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。  \n> 确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST\n> CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。\n>\n> 说明是否存在双向认证机制。  \n5.  边缘UPF应支持启停/链路中断告警，当UPF重启/断电/链路中断后，维护终端/网管上均能生成告警记录。  \n> 提供UPF告警日志记录截图  \n6.  UPF应支持信令面/用户面流量控制机制，以确保其在收到大量攻击报文时不会产生异常。  \n> 提供UPF LST LBFC， LST DDOS的查询结果截图\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\lbfc.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image40.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(AIt+R) 帮助信息(AIt+N)\n> 操作结果如下：\n> 流控开关 = 打开\n> (结果个数 = 1)\n> ---- END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.1548611111111111in\"}\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\ddos.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image41.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(Alt+R) 帮助信息(Alt+N)\n> 结果如下：\n> DDos防护阀值 = 100\n> (结果个数 = 1)\n> ----\n> END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.2013888888888888in\"}  \n7.  边缘UPF应支持IPSec加密、访问控制等安全功能。  \n> 提供UPF 的LST ACL、LST SECPOLICY、DSP ACLRULEADV4的查询结果截图  \n8.  UPF应支持分流策略安全机制，可进行分流策略的配置、冲突检测和告警。  \n> 提供UPF的LST COLOCATEDLBO， DSP COLLISIONCHECK，LST\n> QOSAPPLICATION的查询结果截图。对于有多个参数可选的，提供所有可选参数的查询结果。  \n9.  UPF应支持对UE的互访限制和访问控制，支持UE之间互访策略设置、DNN\nACL策略配置，支持禁止园区私网主动访问运营商网络。  \n> 提供UPF的LST APNUEMUTACC和LST GLOBUEMUTACC、，LST ACLRULEADV4，LST\n> ACLBINDAPN的查询结果截图。  \n10. 应从计算、存储和网络资源等方面加强网络虚拟化基础设施安全保障，对网络虚拟设施的所有操作应纳入统一管理平台，实现集中访问控制和安全审计。  \n> 提供登录网元时4A接入界面截图，并说明4A的访问控制和安全审计功能。  \n11. 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。  \n> 提供UPF底层Fusionsphere的VPC/VDC等逻辑隔离和访问控制功能截图  \n12. 应定期对物理/虚机操作系统、虚拟化软件、第三方开源软件实施安全加固。  \n> 提供系统物理/虚机操作系统、虚拟化软件、第三方开源软件定期安装补丁或更安全的版本等的截图，或相关台账记录等。  \n13. 应支持切片网元隔离，确保非共享网元只出现在一个切片中。  \n> 提供UPF等下沉网元的LST SNSSAI、LST SLICEINSTINFO查询截图。  \n14. 查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。  \n> 提供UPF等下沉网元底层Fusionsphere的资源分配情况，说明虚机提供的功能以及物理机位置。",
+                        "title": null,
+                        "evidence_type": null,
+                        "timestamp_str": null,
+                        "is_active_for_conclusion": false,
+                        "search_tags": []
+                    },
+                    {
+                        "evidence_id": "458013357677765022",
+                        "source": "458013357677765022",
+                        "content": "针对有高可靠性要求的区域，可以考虑CPE\n1+1冗余覆盖的方案，具体实施原则和注意事项包括：  \n冗余备份的两台CPE的SSID和密码设置相同，WiFi信道设置为不同；  \n非冗余CPE之间采用不同的密码，确保非区域终端不能随便接入；  \n启用CPE白名单功能，仅允许名单内设备接入上网；  \nCPE将支持5G和有线备份功能；",
+                        "title": null,
+                        "evidence_type": null,
+                        "timestamp_str": null,
+                        "is_active_for_conclusion": true,
+                        "search_tags": []
+                    }
+                ]
+            },
+            "status": "success",
+            "error_message": null,
+            "audit_status": "已审核",
+            "referenced_evidences": [
+                {
+                    "evidence_id": "458013357677764955",
+                    "content": "1.  5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。  \n> 确认核心网侧是否针对该项目终端的接入做了额外配置；说明该项目网络中是否部署二次认证等安全能力，并提供证明材料。  \n2.  5G\n专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）  \n> 核心网侧确认是否在AMF上开启NAS加密  \n3.  5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。  \n> 提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图  \n4.  N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。  \n> 确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST\n> CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。\n>\n> 说明是否存在双向认证机制。  \n5.  边缘UPF应支持启停/链路中断告警，当UPF重启/断电/链路中断后，维护终端/网管上均能生成告警记录。  \n> 提供UPF告警日志记录截图  \n6.  UPF应支持信令面/用户面流量控制机制，以确保其在收到大量攻击报文时不会产生异常。  \n> 提供UPF LST LBFC， LST DDOS的查询结果截图\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\lbfc.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image40.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(AIt+R) 帮助信息(AIt+N)\n> 操作结果如下：\n> 流控开关 = 打开\n> (结果个数 = 1)\n> ---- END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.1548611111111111in\"}\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\ddos.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image41.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(Alt+R) 帮助信息(Alt+N)\n> 结果如下：\n> DDos防护阀值 = 100\n> (结果个数 = 1)\n> ----\n> END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.2013888888888888in\"}  \n7.  边缘UPF应支持IPSec加密、访问控制等安全功能。  \n> 提供UPF 的LST ACL、LST SECPOLICY、DSP ACLRULEADV4的查询结果截图  \n8.  UPF应支持分流策略安全机制，可进行分流策略的配置、冲突检测和告警。  \n> 提供UPF的LST COLOCATEDLBO， DSP COLLISIONCHECK，LST\n> QOSAPPLICATION的查询结果截图。对于有多个参数可选的，提供所有可选参数的查询结果。  \n9.  UPF应支持对UE的互访限制和访问控制，支持UE之间互访策略设置、DNN\nACL策略配置，支持禁止园区私网主动访问运营商网络。  \n> 提供UPF的LST APNUEMUTACC和LST GLOBUEMUTACC、，LST ACLRULEADV4，LST\n> ACLBINDAPN的查询结果截图。  \n10. 应从计算、存储和网络资源等方面加强网络虚拟化基础设施安全保障，对网络虚拟设施的所有操作应纳入统一管理平台，实现集中访问控制和安全审计。  \n> 提供登录网元时4A接入界面截图，并说明4A的访问控制和安全审计功能。  \n11. 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。  \n> 提供UPF底层Fusionsphere的VPC/VDC等逻辑隔离和访问控制功能截图  \n12. 应定期对物理/虚机操作系统、虚拟化软件、第三方开源软件实施安全加固。  \n> 提供系统物理/虚机操作系统、虚拟化软件、第三方开源软件定期安装补丁或更安全的版本等的截图，或相关台账记录等。  \n13. 应支持切片网元隔离，确保非共享网元只出现在一个切片中。  \n> 提供UPF等下沉网元的LST SNSSAI、LST SLICEINSTINFO查询截图。  \n14. 查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。  \n> 提供UPF等下沉网元底层Fusionsphere的资源分配情况，说明虚机提供的功能以及物理机位置。",
+                    "short_content": "1.  5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。  \n> 确认核心网侧是否针对该项目终端的接入做了额外配置；说明该项目网络中是否部署二次认证等安全能力，并提供证明材料。  \n2.  5G\n专网应开启NAS层机密和完整性保护，能够对NAS信令进行...",
+                    "title": null,
+                    "evidence_type": null,
+                    "timestamp_str": null,
+                    "is_active_for_conclusion": false,
+                    "search_tags": []
+                },
+                {
+                    "evidence_id": "458013357677765022",
+                    "content": "针对有高可靠性要求的区域，可以考虑CPE\n1+1冗余覆盖的方案，具体实施原则和注意事项包括：  \n冗余备份的两台CPE的SSID和密码设置相同，WiFi信道设置为不同；  \n非冗余CPE之间采用不同的密码，确保非区域终端不能随便接入；  \n启用CPE白名单功能，仅允许名单内设备接入上网；  \nCPE将支持5G和有线备份功能；",
+                    "short_content": "针对有高可靠性要求的区域，可以考虑CPE\n1+1冗余覆盖的方案，具体实施原则和注意事项包括：  \n冗余备份的两台CPE的SSID和密码设置相同，WiFi信道设置为不同；  \n非冗余CPE之间采用不同的密码，确保非区域终端不能随便接入；  \n启用CPE白名单功能，仅允许名单内设备接入上网；  \nCPE将支持5G和有线备份功能；",
+                    "title": null,
+                    "evidence_type": null,
+                    "timestamp_str": null,
+                    "is_active_for_conclusion": true,
+                    "search_tags": []
+                }
+            ]
+        },
+        {
+            "spec_id": "3.1.1.1.a",
+            "spec_content": "3.1.1.1 具备5G功能的终端和为行业终端提供接入服务的5G接入网关设备，应支持3GPP标准的认证机制，建议终端选择配备二次认证、安全芯片、GBA认证或AKMA认证机制。",
+            "evidence_search_params": {
+                "query_text": "请提供具备5G功能的终端及接入网关设备支持3GPP标准认证机制（包括二次认证、安全芯片、GBA认证和AKMA认证）的技术文档，重点说明其在行业应用中的实现方式、配置细节与合规性验证方法。",
+                "filter_tags": [
+                    "认证机制",
+                    "5G终端",
+                    "接入网关",
+                    "GBA认证",
+                    "AKMA认证",
+                    "安全芯片",
+                    "二次认证",
+                    "3GPP标准",
+                    "访问控制(Access Control)",
+                    "机密性和完整性保护算法"
+                ],
+                "terminated": false
+            },
+            "conclusion": {
+                "judgement": "符合",
+                "comment": "根据材料2和材料8，5G终端和接入网关支持3GPP标准的认证机制，并提到了二次认证等安全能力。材料2明确要求提供5G终端和接入网关支持3GPP认证机制及加密算法的说明文档；材料8中提到核心网侧部署了针对终端的访问控制和二次认证机制。",
+                "evidence": [
+                    {
+                        "evidence_id": "458013357677764937",
+                        "source": "458013357677764937",
+                        "content": "1.  提供5G行业应用设计文档或其他说明材料，内容应至少包含5G行业应用名称，所属行业、业务场景、预计应用规模（开卡数量、5G终端数量、总终端数量等）、行业应用类型、设备部署位置及规划、第三方云服务使用情况、切片使用情况及类型、专网模式、行业应用简介、网络拓扑图、业务流量和特性、各项资产和运维责任归属情况等。[（计划部、政企、客响分别提供设计方案文档）]{.mark}  \n2.  说明5G终端和接入网关应支持3GPP标准的认证机制，并支持3GPP标准中要求的机密性和完整性保护算法（如128-NEA1,128-NEA2,128-NEA3,128-NIA1,128-NIA2和128-NIA3）  \n> 提供5G终端和接入网关等的认证机制和加密算法的说明文档。[（政企部）]{.mark}  \n3.  说明该项目是否存在多方合作。若存在合作则应提供合作方式合规性评估记录文档和合作企业的安全保障能力评估记录文档。[（政企部，可以参考以下附件中任何一个来做）]{.mark}  \n![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image28.emf)![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image29.emf)  \n4.  说明该项目是否采用了第三方云服务。若存在第三方云服务，则应提供针对第三方云服务商的身份与资质证明材料；针对第三方云计算应提供安全保障技术和安全管理制度文档。[（政企部）]{.mark}  \n5.  说明新建5G应用平台物理安全的安全保障措施，提供安全技术措施文档和安全管理制度文档，明确应用服务器、机房、节点的地理位置，应具备一定的管理措施和技术措施确保其物理环境安全。  \n> [（信安部提供制度）]{.mark}\n>\n> ![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image30.emf)  \n![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image31.png){width=\"5.764583333333333in\"\nheight=\"3.9791666666666665in\"}",
+                        "title": null,
+                        "evidence_type": null,
+                        "timestamp_str": null,
+                        "is_active_for_conclusion": true,
+                        "search_tags": []
+                    },
+                    {
+                        "evidence_id": "458013357677764955",
+                        "source": "458013357677764955",
+                        "content": "1.  5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。  \n> 确认核心网侧是否针对该项目终端的接入做了额外配置；说明该项目网络中是否部署二次认证等安全能力，并提供证明材料。  \n2.  5G\n专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）  \n> 核心网侧确认是否在AMF上开启NAS加密  \n3.  5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。  \n> 提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图  \n4.  N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。  \n> 确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST\n> CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。\n>\n> 说明是否存在双向认证机制。  \n5.  边缘UPF应支持启停/链路中断告警，当UPF重启/断电/链路中断后，维护终端/网管上均能生成告警记录。  \n> 提供UPF告警日志记录截图  \n6.  UPF应支持信令面/用户面流量控制机制，以确保其在收到大量攻击报文时不会产生异常。  \n> 提供UPF LST LBFC， LST DDOS的查询结果截图\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\lbfc.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image40.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(AIt+R) 帮助信息(AIt+N)\n> 操作结果如下：\n> 流控开关 = 打开\n> (结果个数 = 1)\n> ---- END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.1548611111111111in\"}\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\ddos.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image41.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(Alt+R) 帮助信息(Alt+N)\n> 结果如下：\n> DDos防护阀值 = 100\n> (结果个数 = 1)\n> ----\n> END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.2013888888888888in\"}  \n7.  边缘UPF应支持IPSec加密、访问控制等安全功能。  \n> 提供UPF 的LST ACL、LST SECPOLICY、DSP ACLRULEADV4的查询结果截图  \n8.  UPF应支持分流策略安全机制，可进行分流策略的配置、冲突检测和告警。  \n> 提供UPF的LST COLOCATEDLBO， DSP COLLISIONCHECK，LST\n> QOSAPPLICATION的查询结果截图。对于有多个参数可选的，提供所有可选参数的查询结果。  \n9.  UPF应支持对UE的互访限制和访问控制，支持UE之间互访策略设置、DNN\nACL策略配置，支持禁止园区私网主动访问运营商网络。  \n> 提供UPF的LST APNUEMUTACC和LST GLOBUEMUTACC、，LST ACLRULEADV4，LST\n> ACLBINDAPN的查询结果截图。  \n10. 应从计算、存储和网络资源等方面加强网络虚拟化基础设施安全保障，对网络虚拟设施的所有操作应纳入统一管理平台，实现集中访问控制和安全审计。  \n> 提供登录网元时4A接入界面截图，并说明4A的访问控制和安全审计功能。  \n11. 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。  \n> 提供UPF底层Fusionsphere的VPC/VDC等逻辑隔离和访问控制功能截图  \n12. 应定期对物理/虚机操作系统、虚拟化软件、第三方开源软件实施安全加固。  \n> 提供系统物理/虚机操作系统、虚拟化软件、第三方开源软件定期安装补丁或更安全的版本等的截图，或相关台账记录等。  \n13. 应支持切片网元隔离，确保非共享网元只出现在一个切片中。  \n> 提供UPF等下沉网元的LST SNSSAI、LST SLICEINSTINFO查询截图。  \n14. 查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。  \n> 提供UPF等下沉网元底层Fusionsphere的资源分配情况，说明虚机提供的功能以及物理机位置。",
+                        "title": null,
+                        "evidence_type": null,
+                        "timestamp_str": null,
+                        "is_active_for_conclusion": true,
+                        "search_tags": []
+                    }
+                ]
+            },
+            "status": "success",
+            "error_message": null,
+            "audit_status": "未审核",
+            "referenced_evidences": [
+                {
+                    "evidence_id": "458013357677764937",
+                    "content": "1.  提供5G行业应用设计文档或其他说明材料，内容应至少包含5G行业应用名称，所属行业、业务场景、预计应用规模（开卡数量、5G终端数量、总终端数量等）、行业应用类型、设备部署位置及规划、第三方云服务使用情况、切片使用情况及类型、专网模式、行业应用简介、网络拓扑图、业务流量和特性、各项资产和运维责任归属情况等。[（计划部、政企、客响分别提供设计方案文档）]{.mark}  \n2.  说明5G终端和接入网关应支持3GPP标准的认证机制，并支持3GPP标准中要求的机密性和完整性保护算法（如128-NEA1,128-NEA2,128-NEA3,128-NIA1,128-NIA2和128-NIA3）  \n> 提供5G终端和接入网关等的认证机制和加密算法的说明文档。[（政企部）]{.mark}  \n3.  说明该项目是否存在多方合作。若存在合作则应提供合作方式合规性评估记录文档和合作企业的安全保障能力评估记录文档。[（政企部，可以参考以下附件中任何一个来做）]{.mark}  \n![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image28.emf)![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image29.emf)  \n4.  说明该项目是否采用了第三方云服务。若存在第三方云服务，则应提供针对第三方云服务商的身份与资质证明材料；针对第三方云计算应提供安全保障技术和安全管理制度文档。[（政企部）]{.mark}  \n5.  说明新建5G应用平台物理安全的安全保障措施，提供安全技术措施文档和安全管理制度文档，明确应用服务器、机房、节点的地理位置，应具备一定的管理措施和技术措施确保其物理环境安全。  \n> [（信安部提供制度）]{.mark}\n>\n> ![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image30.emf)  \n![](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image31.png){width=\"5.764583333333333in\"\nheight=\"3.9791666666666665in\"}",
+                    "short_content": "1.  提供5G行业应用设计文档或其他说明材料，内容应至少包含5G行业应用名称，所属行业、业务场景、预计应用规模（开卡数量、5G终端数量、总终端数量等）、行业应用类型、设备部署位置及规划、第三方云服务使用情况、切片使用情况及类型、专网模式、行业应用简介、网络拓扑图、业务流量和特性、各项资产和运维责任归属情况等。[（计划部、政企、客响分别提供设计方案文档）]{.mark}  \n2.  说明5G终端和...",
+                    "title": null,
+                    "evidence_type": null,
+                    "timestamp_str": null,
+                    "is_active_for_conclusion": true,
+                    "search_tags": []
+                },
+                {
+                    "evidence_id": "458013357677764955",
+                    "content": "1.  5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。  \n> 确认核心网侧是否针对该项目终端的接入做了额外配置；说明该项目网络中是否部署二次认证等安全能力，并提供证明材料。  \n2.  5G\n专网应开启NAS层机密和完整性保护，能够对NAS信令进行机密性和完整性保护。（如果企业不具备或未开启加密机制，需要提供说明材料。）  \n> 核心网侧确认是否在AMF上开启NAS加密  \n3.  5G专网N4接口是否支持物理隔离，或者具备机密性保护、完整性保护和抗重放保护机制。  \n> 提供UPF侧LST IPSECPROPOSAL、LST IKECFG的查询截图  \n4.  N4接口应支持双向认证能力或仅允许指定IP的SMF和UPF互访。如使用NRF进行注册和授权，则未在NRF中合法注册和授权的SMF无法访问UPF。  \n> 确认是否通过NRF进行SMF和UPF的对接；若采取IP配置互通，则于UPF侧提供LST\n> CPNODEID和LST CPACCESSLISTFUNC、LST CPACCESSLIST的截图。\n>\n> 说明是否存在双向认证机制。  \n5.  边缘UPF应支持启停/链路中断告警，当UPF重启/断电/链路中断后，维护终端/网管上均能生成告警记录。  \n> 提供UPF告警日志记录截图  \n6.  UPF应支持信令面/用户面流量控制机制，以确保其在收到大量攻击报文时不会产生异常。  \n> 提供UPF LST LBFC， LST DDOS的查询结果截图\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\lbfc.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image40.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(AIt+R) 帮助信息(AIt+N)\n> 操作结果如下：\n> 流控开关 = 打开\n> (结果个数 = 1)\n> ---- END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.1548611111111111in\"}\n>\n> ![D:\\\\资料文件整理\\\\测评\\\\山西移动\\\\临汾台头\\\\5G截图\\\\ddos.PNG](Data\\Markdown\\5G行业应用安全风险评估资料需求v2-来宾_media/media/image41.png){width=\"5.768055555555556in\"\n<image_discription>\n> # Description:\n> 通用维护(AIt+C) 操作记录(Alt+R) 帮助信息(Alt+N)\n> 结果如下：\n> DDos防护阀值 = 100\n> (结果个数 = 1)\n> ----\n> END\n> 区自动滚动 清除报告(F6) 启动重定向\n</image_discription>  \n> height=\"1.2013888888888888in\"}  \n7.  边缘UPF应支持IPSec加密、访问控制等安全功能。  \n> 提供UPF 的LST ACL、LST SECPOLICY、DSP ACLRULEADV4的查询结果截图  \n8.  UPF应支持分流策略安全机制，可进行分流策略的配置、冲突检测和告警。  \n> 提供UPF的LST COLOCATEDLBO， DSP COLLISIONCHECK，LST\n> QOSAPPLICATION的查询结果截图。对于有多个参数可选的，提供所有可选参数的查询结果。  \n9.  UPF应支持对UE的互访限制和访问控制，支持UE之间互访策略设置、DNN\nACL策略配置，支持禁止园区私网主动访问运营商网络。  \n> 提供UPF的LST APNUEMUTACC和LST GLOBUEMUTACC、，LST ACLRULEADV4，LST\n> ACLBINDAPN的查询结果截图。  \n10. 应从计算、存储和网络资源等方面加强网络虚拟化基础设施安全保障，对网络虚拟设施的所有操作应纳入统一管理平台，实现集中访问控制和安全审计。  \n> 提供登录网元时4A接入界面截图，并说明4A的访问控制和安全审计功能。  \n11. 应根据不同虚拟机功能合理划分内部安全域，做好域间隔离和访问控制。  \n> 提供UPF底层Fusionsphere的VPC/VDC等逻辑隔离和访问控制功能截图  \n12. 应定期对物理/虚机操作系统、虚拟化软件、第三方开源软件实施安全加固。  \n> 提供系统物理/虚机操作系统、虚拟化软件、第三方开源软件定期安装补丁或更安全的版本等的截图，或相关台账记录等。  \n13. 应支持切片网元隔离，确保非共享网元只出现在一个切片中。  \n> 提供UPF等下沉网元的LST SNSSAI、LST SLICEINSTINFO查询截图。  \n14. 查看虚拟机是否专用、物理机是否专用，以保障切片资源隔离。  \n> 提供UPF等下沉网元底层Fusionsphere的资源分配情况，说明虚机提供的功能以及物理机位置。",
+                    "short_content": "1.  5G基站或核心网支持对5G终端进行访问控制，仅允许特定的行业终端进入5G专网，限定条件包括但不限于终端标识（IMSI/SUPI）、终端位置（CGI、TAI）、IMEI黑名单、流量限制、机卡绑定等。  \n> 确认核心网侧是否针对该项目终端的接入做了额外配置；说明该项目网络中是否部署二次认证等安全能力，并提供证明材料。  \n2.  5G\n专网应开启NAS层机密和完整性保护，能够对NAS信令进行...",
+                    "title": null,
+                    "evidence_type": null,
+                    "timestamp_str": null,
+                    "is_active_for_conclusion": true,
+                    "search_tags": []
+                }
+            ]
+        }
+    ],
+    "statics_judgement": {
+        "符合": 1,
+        "不符合": 1,
+        "不涉及": 0,
+        "未处理": 0,
+        "error": 0
+    },
+    "statics_audit_status": {
+        "未审核": 1,
+        "已跳过": 0,
+        "已审核": 1
+    },
+    "saved_current_item_index": 0
+}

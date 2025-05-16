@@ -43,5 +43,5 @@ class SpecLoader:
 
 if __name__ == "__main__":
     loader = SpecLoader()
-    specs = loader.load_specs("AssessmentSystem/assessment_items.jsonl")
+    specs = loader.load_specs("Data/Assessment/assessment_items.jsonl")
     print(f"Loaded {len(specs)} specifications.")

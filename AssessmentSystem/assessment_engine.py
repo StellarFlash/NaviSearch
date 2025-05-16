@@ -339,8 +339,8 @@ class AssessmentEngine:
 # 示例用法
 if __name__ == "__main__":
     # 请根据您的实际环境配置这些参数
-    SPEC_FILE = "AssessmentSystem/assessment_items.jsonl"  # 评估规范文件路径
-    REPORT_FILE = "AssessmentSystem/assessment_report.json" # 评估报告输出路径
+    SPEC_FILE = "Data/Assessment/assessment_items.jsonl"  # 评估规范文件路径
+    REPORT_FILE = "Data/Report/assessment_report.json" # 评估报告输出路径
     NAVISEARCH_ADMIN_URL = "http://" + os.getenv("ADMIN_API_HOST") + ":" + os.getenv("ADMIN_API_PORT") # NaviSearch Admin API 地址
     NAVISEARCH_VISITOR_URL = "http://" + os.getenv("VISITOR_API_HOST") + ":" + os.getenv("VISITOR_API_PORT") # NaviSearch Visitor API 地址
     EVIDENCE_COLLECTION = "security_assessment_evidence" # NaviSearch 集合名称

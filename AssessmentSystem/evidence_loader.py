@@ -43,5 +43,5 @@ class EvidenceLoader:
 
 if __name__ == "__main__":
     loader = EvidenceLoader()
-    evidences = loader.load_evidences("AssessmentSystem/evidences.jsonl")
+    evidences = loader.load_evidences("Data/Evidence/evidences.jsonl")
     print(f"Loaded {len(evidences)} specifications.")

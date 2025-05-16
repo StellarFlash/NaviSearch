@@ -3,13 +3,9 @@ Docs/*
 !Docs/.gitkeep
 Data/Markdown/*
 !Data/Markdown/.gitkeep
-Data/Records/*
-!Data/Records/.gitkeep
-Data/Corpus/*
-!Data/Corpus/.gitkeep
-Data/Chunks/*
-!Data/Chunks/.gitkeep
-AssessmentSystem/assessment_report*
-AssessmentSystem/evidences.jsonl
+Data/Evidence/*
+!Data/Evidence/.gitkeep
+Data/Report/*
+!Data/Report/.gitkeep
 logs/*
 !logs/.gitkeep

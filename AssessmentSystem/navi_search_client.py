@@ -13,7 +13,7 @@ dotenv.load_dotenv()
 evidence_loader = EvidenceLoader()
 
 class NaviSearchClient:
-    def __init__(self, admin_url: str, visitor_url: str, evidence_collection_name: str, llm_client:LLMAssessmentClient):
+    def __init__(self, admin_url: str, visitor_url: str, evidence_collection_name: str, llm_client:LLMAssessmentClient, insert_evidences = True):
         self.admin_url = admin_url
         self.visitor_url = visitor_url
         self.evidence_collection_name = evidence_collection_name
@@ -26,12 +26,13 @@ class NaviSearchClient:
 
         try:
             # 加载本地证据文件
-            evidences = evidence_loader.load_evidences("AssessmentSystem/evidences.jsonl")
-            if evidences:
-                # 插入所有加载的证据到集合
-                self._insert_evidences(evidence_collection_name, evidences)
-            else:
-                print("没有加载到证据，跳过插入。")
+            if insert_evidences:
+                evidences = evidence_loader.load_evidences("Data/Evidence/evidences.jsonl")
+                if evidences:
+                    # 插入所有加载的证据到集合
+                    self._insert_evidences(evidence_collection_name, evidences)
+                else:
+                    print("没有加载到证据，跳过插入。")
         except FileNotFoundError:
             print("错误：找不到 AssessmentSystem/evidences.jsonl 文件，跳过证据插入。")
         except Exception as e:
